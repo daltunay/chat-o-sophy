@@ -4,7 +4,7 @@ import streamlit as st
 
 from chatbots import SingleChatbot
 from utils.api_key import configure_openai_api_key
-from utils.chat_history import enable_user_input, reset, display_history
+from utils.chat_history import display_history, enable_user_input, reset
 
 logging.basicConfig(
     level=logging.INFO,
