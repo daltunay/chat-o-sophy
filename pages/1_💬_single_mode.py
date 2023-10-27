@@ -23,14 +23,13 @@ st.write(
 def main():
     configure_openai_api_key()
 
-    if "chatbot" not in st.session_state:
+    if "chatbot" not in st.session_state and st.session_state.get("_OPENAI_API_KEY"):
         st.session_state.chatbot = SingleChatbot(philosopher="Nietzsche")
-        st.session_state.history = []
 
     if user_query := st.chat_input(
         placeholder="Ask me anything!",
         disabled=st.session_state.get("chatbot") is None
-        or st.session_state.get("OPENAI_API_KEY") is None,
+        or st.session_state.get("_OPENAI_API_KEY") is None,
     ):
         st.session_state.chatbot.chat(user_query)
 

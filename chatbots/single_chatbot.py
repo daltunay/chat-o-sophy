@@ -19,6 +19,7 @@ class SingleChatbot:
     def __init__(self, philosopher):
         logging.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
+        self.greet()
 
     @property
     @st.cache_resource
