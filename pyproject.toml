@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "chat-o-sophy"
+version = "0.0.0"
+description = "Chat with your favorite philosohpers!"
+authors = ["Daniel Altunay"]
+readme = "README.md"
+packages = [{include = "chat_o_sophy"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.0.323"
+streamlit = "^1.27.2"
+openai = "^0.28.1"
+python-dotenv = "^1.0.0"
+watchdog = "^3.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
