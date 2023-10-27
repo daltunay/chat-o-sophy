@@ -64,13 +64,17 @@ class SingleChatbot:
             llm=_self.llm, memory=_self.memory, prompt=_self.template, verbose=True
         )
 
-    @st.cache_resource(show_spinner=False)
-    def greet(_self):
-        _self.chat(prompt="Greet the user.", is_greetings=True)
+    def greet(self):
+        with st.chat_message("assistant"):
+            greetings = self.chain.run(
+                input="Greet the user.",
+                philosopher=self.philosopher,
+                callbacks=self.callbacks(),
+            )
+            display_msg(msg=greetings, author="assistant", save=True, write=False)
 
-    def chat(self, prompt, is_greetings=False):
-        if not is_greetings:
-            display_msg(msg=prompt, author="user", save=True, write=True)
+    def chat(self, prompt):
+        display_msg(msg=prompt, author="user", save=True, write=True)
         with st.chat_message("assistant"):
             bot_response = self.chain.run(
                 input=prompt, philosopher=self.philosopher, callbacks=self.callbacks()
