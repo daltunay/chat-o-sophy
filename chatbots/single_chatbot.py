@@ -1,16 +1,16 @@
-import logging
-
 import streamlit as st
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 
 from utils.logging import configure_logger
-from utils.streaming import (StreamingChatCallbackHandler,
-                             StreamingStdOutCallbackHandler)
+from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
 logger = configure_logger(__file__)
 

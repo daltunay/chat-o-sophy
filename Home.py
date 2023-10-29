@@ -1,5 +1,3 @@
-import logging
-
 import streamlit as st
 
 from utils.api_manager import APIKeyManager
