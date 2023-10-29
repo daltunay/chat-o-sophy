@@ -1,10 +1,8 @@
 import streamlit as st
 
-
 from utils.api_manager import APIKeyManager
 from utils.logging import configure_logger
 from utils.logo import generate_logo
-
 
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 

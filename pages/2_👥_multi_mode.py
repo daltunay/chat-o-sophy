@@ -3,7 +3,6 @@ import streamlit as st
 from chatbots import MultiChatbots
 from utils.logging import configure_logger
 
-
 st.set_page_config(page_title="chat-o-sophy", page_icon="💬")
 
 PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer"]

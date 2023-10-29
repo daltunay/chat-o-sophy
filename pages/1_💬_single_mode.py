@@ -4,7 +4,6 @@ from chatbots import SingleChatbot
 from utils.chat_history import display_history
 from utils.logging import configure_logger
 
-
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
 
 
