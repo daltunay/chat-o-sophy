@@ -17,9 +17,13 @@ INITIAL_PROMPT = "I am your guest. Please present yourself, greet me, and explai
 
 
 class SingleChatbot:
-    def __init__(self, philosopher):
+    def __init__(self, philosopher, role="assistant"):
         logging.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
+        if role == "assistant":
+            self.role = "assistant"
+        elif role == "name":
+            self.role = philosopher
         self.history = st.session_state.history[philosopher]
 
     @property
@@ -75,8 +79,8 @@ class SingleChatbot:
         if save_user_message:
             st.chat_message("user").write(prompt)
             self.history.append({"role": "user", "content": prompt})
-        with st.chat_message("assistant"):
+        with st.chat_message(self.role):
             bot_response = self.chain.run(
                 input=prompt, philosopher=self.philosopher, callbacks=self.callbacks()
             )
-            self.history.append({"role": "assistant", "content": bot_response})
+            self.history.append({"role": self.role, "content": bot_response})
