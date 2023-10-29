@@ -11,7 +11,6 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from utils.chat_history import display_msg
 from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
 
@@ -19,6 +18,7 @@ class SingleChatbot:
     def __init__(self, philosopher):
         logging.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
+        self.history = st.session_state.history[st.session_state.current_philosopher]
 
     @property
     @st.cache_resource
@@ -64,18 +64,17 @@ class SingleChatbot:
         )
 
     def greet(self):
-        with st.chat_message("assistant"):
-            greetings = self.chain.run(
-                input="Greet the user.",
-                philosopher=self.philosopher,
-                callbacks=self.callbacks(),
-            )
-            display_msg(msg=greetings, author="assistant", save=True, write=False)
+        self.chat(
+            prompt="I am your guest. Please present yourself, greet me, and explain me the main topics you are interested in as a philosopher. Keep it very short.",
+            save_user_message=False,
+        )
 
-    def chat(self, prompt):
-        display_msg(msg=prompt, author="user", save=True, write=True)
+    def chat(self, prompt, save_user_message=True):
+        if save_user_message:
+            st.chat_message("user").write(prompt)
+            self.history.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             bot_response = self.chain.run(
                 input=prompt, philosopher=self.philosopher, callbacks=self.callbacks()
             )
-            display_msg(msg=bot_response, author="assistant", save=True, write=False)
+            self.history.append({"role": "assistant", "content": bot_response})

@@ -11,62 +11,62 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
-PHILOSOPHER_OPTIONS = ["Nietzsche", "Plato", "Schopenhauer"]
-
 st.set_page_config(page_title="chat-o-sophy", page_icon="💬")
-st.title("Chatbot")
-st.caption("Allows users to interact with the LLM")
-st.write(
-    "["
-    "![source code]"
-    "(https://img.shields.io/badge/view_source_code-gray?logo=github)"
-    "]"
-    "(https://github.com/)"
-)
-selectbox_placeholder = st.empty()
+
+PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer"]
 
 
 def initialize_chat():
-    if not st.session_state.get("OPENAI_API_KEY"):
-        return
-
-    philosopher = st.session_state.current_philosopher
-
-    logging.info(f"Initializing chat session: {philosopher=}")
-    if not st.session_state.get("chatbots", {}).get(philosopher):
-        with selectbox_placeholder.container():
-            chatbot = SingleChatbot(philosopher)
-        st.session_state.chatbots[philosopher] = chatbot
-        st.session_state.chatbot = chatbot
+    philosopher_name = st.session_state.current_philosopher
+    if (
+        philosopher_bot := st.session_state.get("chatbots", {}).get(philosopher_name)
+        is None
+    ):
+        logging.info(f"Initializing chat session with {philosopher_name}")
+        philosopher_bot = SingleChatbot(philosopher_name)
+        st.session_state.current_philosopher = philosopher_name
+        st.session_state.chatbot = philosopher_bot
+        st.session_state.chatbots[philosopher_name] = philosopher_bot
+    else:
+        logging.info(f"Restoring chat session with {philosopher_name}")
+        st.session_state.current_philosopher = philosopher_name
+        st.session_state.chatbot = st.session_state.chatbots[philosopher_name]
 
 
 @display_history
 def main():
+    if not st.session_state.get("api_key_manager"):
+        return
     st.session_state.api_key_manager.display_api_form()
-    st.session_state.setdefault(
-        "chatbots", {philosopher: None for philosopher in PHILOSOPHER_OPTIONS}
-    )
-    st.session_state.setdefault(
-        "history", {philosopher: [] for philosopher in PHILOSOPHER_OPTIONS}
-    )
 
-    with selectbox_placeholder.container():
+    st.session_state.setdefault("header_placeholder", st.empty())
+    st.session_state.setdefault("chatbots", {name: None for name in PHILOSOPHERS})
+    st.session_state.setdefault("history", {name: [] for name in PHILOSOPHERS})
+
+    with st.session_state.header_placeholder.container():
+        st.title("Single mode", anchor=False)
+        st.caption("Chat with the philosopher of your choice!")
+
         st.selectbox(
             label="Philosopher:",
             placeholder="Choose one philosopher",
             key="current_philosopher",
-            options=PHILOSOPHER_OPTIONS,
+            options=PHILOSOPHERS,
             index=None,
             on_change=initialize_chat,
             disabled=st.session_state.get("OPENAI_API_KEY") is None,
         )
 
-    if user_query := st.chat_input(
-        placeholder="Ask me anything!",
-        disabled=st.session_state.get("chatbot") is None
-        or st.session_state.get("OPENAI_API_KEY") is None,
-    ):
-        st.session_state.chatbot.chat(user_query)
+    if current_philosopher := st.session_state.get("current_philosopher"):
+        if user_query := st.chat_input(
+            placeholder="What do you want to know?",
+            disabled=st.session_state.get("chatbot") is None
+            or st.session_state.get("OPENAI_API_KEY") is None,
+        ):
+            st.session_state.chatbot.chat(prompt=user_query)
+
+        if not st.session_state.history[current_philosopher]:
+            st.session_state.chatbot.greet()
 
 
 if __name__ == "__main__":

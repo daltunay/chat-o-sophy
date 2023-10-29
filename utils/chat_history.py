@@ -3,8 +3,6 @@ import logging
 
 import streamlit as st
 
-PHILOSOPHER_OPTIONS = ["Nietzsche", "Plato", "Schopenhauer"]
-
 
 def reset(func):
     st.session_state.setdefault("current_page", func.__qualname__)
@@ -25,31 +23,10 @@ def reset(func):
 
 # decorator
 def display_history(func):
-    for msg in st.session_state.get("history", {}).get(
-        st.session_state.get("current_philosopher"), []
-    ):
-        display_msg(msg["content"], msg["role"])
+    if "current_philosopher" in st.session_state:
+        for msg in st.session_state.history.get(
+            st.session_state.current_philosopher, []
+        ):
+            st.chat_message(msg["role"]).write(msg["content"])
 
-    def execute(*args, **kwargs):
-        func(*args, **kwargs)
-
-    return execute
-
-
-def display_msg(msg, author, save=False, write=True):
-    """Method to display message on the UI
-
-    Args:
-        msg (str): message to display
-        author (str): author of the message -user/assistant
-    """
-    if save:
-        st.session_state.history[st.session_state.current_philosopher].append(
-            {"role": author, "content": msg}
-        )
-    if write:
-        st.chat_message(author).write(msg)
-
-
-def enable_user_input(state):
-    st.session_state.input_enabled = state
+    return func
