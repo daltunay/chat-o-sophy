@@ -13,6 +13,11 @@ from langchain.prompts import (
 
 from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
 INITIAL_PROMPT = "I am your guest. Please present yourself, greet me, and explain me the main topics you are interested in as a philosopher. Keep it very short."
 
 
@@ -70,12 +75,14 @@ class SingleChatbot:
         )
 
     def greet(self):
+        logging.info("Generating greetings")
         self.chat(
             prompt=INITIAL_PROMPT,
             save_user_message=False,
         )
 
     def chat(self, prompt, save_user_message=True):
+        logging.info("Answering user prompt")
         if save_user_message:
             st.chat_message("user").write(prompt)
             self.history.append({"role": "user", "content": prompt})

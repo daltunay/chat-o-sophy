@@ -32,6 +32,7 @@ def initialize_chat():
 
 @display_history
 def main():
+    logging.info("Starting single mode")
     if api_key_manager := st.session_state.get("api_key_manager"):
         api_key_manager.display_api_form()
 

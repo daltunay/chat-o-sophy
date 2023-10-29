@@ -7,6 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv(".env")
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
 
 class APIKeyManager:
     def __init__(self):
@@ -48,14 +53,18 @@ class APIKeyManager:
                 )
 
         if st.session_state.get("valid_api_key"):
+            logging.info("Authentication to OpenAI API successful")
             st.sidebar.success("Successfully authenticated", icon="🔐")
         else:
+            logging.info("Authentication to OpenAI API failed")
             st.sidebar.error("Please add your OpenAI API key to continue")
             st.sidebar.info(
                 "Obtain your key from: https://platform.openai.com/account/api-keys"
             )
 
     def check_api_key(self, type: str):
+        logging.info("Checking API key validity")
+
         api_key = None
 
         if type == "local" and st.session_state.get("use_local_key"):
@@ -75,9 +84,11 @@ class APIKeyManager:
             self.delete_api_key()
 
     def store_api_key(self, api_key):
+        logging.info("Storing API key in environment")
         st.session_state.OPENAI_API_KEY = api_key
         os.environ["OPENAI_API_KEY"] = api_key
 
     def delete_api_key(self):
+        logging.info("Deleting API key")
         st.session_state.OPENAI_API_KEY = None
         os.environ.pop("OPENAI_API_KEY", None)

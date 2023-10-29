@@ -15,7 +15,9 @@ PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer"]
 
 
 def initialize_chat():
-    multi_chatbots = MultiChatbots(philosophers=st.session_state.current_philosophers)
+    philosopher_names = st.session_state.current_philosophers
+    logging.info(f"Initializing chat session with {philosopher_names}")
+    multi_chatbots = MultiChatbots(philosophers=philosopher_names)
     st.session_state.multi_chatbots = multi_chatbots
 
 
@@ -38,7 +40,6 @@ def main():
             max_selections=3,
             default=None,
             disabled=st.session_state.get("OPENAI_API_KEY") is None,
-            on_change=initialize_chat,
         )
 
     if user_query := st.chat_input(
@@ -46,6 +47,7 @@ def main():
         disabled=st.session_state.get("current_philosophers") == []
         or st.session_state.get("OPENAI_API_KEY") is None,
     ):
+        initialize_chat()
         st.session_state.multi_chatbots.ask(user_query)
 
 
