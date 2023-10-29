@@ -1,19 +1,16 @@
 import streamlit as st
 
+
 from utils.api_manager import APIKeyManager
 from utils.logging import configure_logger
 from utils.logo import generate_logo
 
-logger = configure_logger(__file__)
 
-
-st.set_page_config(
-    page_title="chat-o-sophy", page_icon="💭", layout="wide", menu_items=None
-)
+st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 
 def main():
-    logger.info("Starting application")
+    logger.info("Running home")
     st.session_state.setdefault("api_key_manager", APIKeyManager())
     st.session_state.api_key_manager.display_api_form()
 
@@ -75,4 +72,5 @@ def main():
 
 
 if __name__ == "__main__":
+    logger = configure_logger(__file__)
     main()
