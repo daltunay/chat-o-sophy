@@ -49,8 +49,8 @@ class APIKeyManager:
         if st.session_state.get("valid_api_key"):
             st.sidebar.success("Successfully authenticated", icon="🔐")
         else:
-            st.error("Please add your OpenAI API key to continue.")
-            st.info(
+            st.sidebar.error("Please add your OpenAI API key to continue")
+            st.sidebar.info(
                 "Obtain your key from: https://platform.openai.com/account/api-keys"
             )
 
