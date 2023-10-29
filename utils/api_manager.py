@@ -1,10 +1,10 @@
-import streamlit as st
-import openai
-from dotenv import load_dotenv
-import os
 import logging
+import os
 
-# Load environment variables from .env file
+import openai
+import streamlit as st
+from dotenv import load_dotenv
+
 load_dotenv(".env")
 
 

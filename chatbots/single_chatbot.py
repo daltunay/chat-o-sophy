@@ -13,12 +13,14 @@ from langchain.prompts import (
 
 from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
+INITIAL_PROMPT = "I am your guest. Please present yourself, greet me, and explain me the main topics you are interested in as a philosopher. Keep it very short."
+
 
 class SingleChatbot:
     def __init__(self, philosopher):
         logging.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
-        self.history = st.session_state.history[st.session_state.current_philosopher]
+        self.history = st.session_state.history[philosopher]
 
     @property
     @st.cache_resource
@@ -65,7 +67,7 @@ class SingleChatbot:
 
     def greet(self):
         self.chat(
-            prompt="I am your guest. Please present yourself, greet me, and explain me the main topics you are interested in as a philosopher. Keep it very short.",
+            prompt=INITIAL_PROMPT,
             save_user_message=False,
         )
 

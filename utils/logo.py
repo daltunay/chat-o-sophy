@@ -1,7 +1,7 @@
 import os
-import streamlit as st
 
 import openai
+import streamlit as st
 
 
 @st.cache_resource(show_spinner="Generating logo...")
