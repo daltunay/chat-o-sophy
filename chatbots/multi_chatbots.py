@@ -1,19 +1,16 @@
-import logging
 
 import streamlit as st
 
+from utils.logging import configure_logger
+
 from .single_chatbot import SingleChatbot
 
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+logger = configure_logger(__file__)
 
 
 class MultiChatbots:
     def __init__(self, philosophers):
-        logging.info(f"Initializing chatbots: {philosophers}")
+        logger.info(f"Initializing chatbots: {philosophers}")
         self.philosophers = philosophers
         self.chatbots = [
             SingleChatbot(philosopher=philosopher, role="name")
@@ -22,7 +19,7 @@ class MultiChatbots:
         self.history = []
 
     def ask(self, prompt):
-        logging.info("Answering user question")
+        logger.info("Answering user question")
         st.chat_message("user").write(prompt)
         for chatbot in self.chatbots:
             st.subheader(chatbot.philosopher, divider="gray")

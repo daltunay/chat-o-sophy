@@ -1,14 +1,11 @@
-import logging
 
 import streamlit as st
 
 from chatbots import SingleChatbot
 from utils.chat_history import display_history
+from utils.logging import configure_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+logger = configure_logger(__file__)
 
 st.set_page_config(page_title="chat-o-sophy", page_icon="💬")
 
@@ -21,18 +18,18 @@ def initialize_chat():
         philosopher_bot := st.session_state.get("chatbots", {}).get(philosopher_name)
         is None
     ):
-        logging.info(f"Initializing chat session with {philosopher_name}")
+        logger.info(f"Initializing chat session with {philosopher_name}")
         philosopher_bot = SingleChatbot(philosopher_name)
         st.session_state.chatbot = philosopher_bot
         st.session_state.chatbots[philosopher_name] = philosopher_bot
     else:
-        logging.info(f"Restoring chat session with {philosopher_name}")
+        logger.info(f"Restoring chat session with {philosopher_name}")
         st.session_state.chatbot = st.session_state.chatbots[philosopher_name]
 
 
 @display_history
 def main():
-    logging.info("Starting single mode")
+    logger.info("Starting single mode")
     if api_key_manager := st.session_state.get("api_key_manager"):
         api_key_manager.display_api_form()
 

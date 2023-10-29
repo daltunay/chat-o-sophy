@@ -5,17 +5,16 @@ import openai
 import streamlit as st
 from dotenv import load_dotenv
 
+from utils.logging import configure_logger
+
 load_dotenv(".env")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+logger = configure_logger(__file__)
 
 
 class APIKeyManager:
     def __init__(self):
-        logging.info("Initializing API key manager")
+        logger.info("Initializing API key manager")
         self.local_api_key = st.session_state.get(
             "local_api_key", os.getenv("LOCAL_OPENAI_API_KEY")
         )
@@ -53,17 +52,17 @@ class APIKeyManager:
                 )
 
         if st.session_state.get("valid_api_key"):
-            logging.info("Authentication to OpenAI API successful")
+            logger.info("Authentication to OpenAI API successful")
             st.sidebar.success("Successfully authenticated", icon="🔐")
         else:
-            logging.info("Authentication to OpenAI API failed")
+            logger.info("Authentication to OpenAI API failed")
             st.sidebar.error("Please add your OpenAI API key to continue")
             st.sidebar.info(
                 "Obtain your key from: https://platform.openai.com/account/api-keys"
             )
 
     def check_api_key(self, type: str):
-        logging.info("Checking API key validity")
+        logger.info("Checking API key validity")
 
         api_key = None
 
@@ -84,11 +83,11 @@ class APIKeyManager:
             self.delete_api_key()
 
     def store_api_key(self, api_key):
-        logging.info("Storing API key in environment")
+        logger.info("Storing API key in environment")
         st.session_state.OPENAI_API_KEY = api_key
         os.environ["OPENAI_API_KEY"] = api_key
 
     def delete_api_key(self):
-        logging.info("Deleting API key")
+        logger.info("Deleting API key")
         st.session_state.OPENAI_API_KEY = None
         os.environ.pop("OPENAI_API_KEY", None)

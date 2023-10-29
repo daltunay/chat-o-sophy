@@ -1,13 +1,9 @@
-import logging
-
 import streamlit as st
 
 from chatbots import MultiChatbots
+from utils.logging import configure_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+logger = configure_logger(__file__)
 
 st.set_page_config(page_title="chat-o-sophy", page_icon="💬")
 
@@ -16,7 +12,7 @@ PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer"]
 
 def initialize_chat():
     philosopher_names = st.session_state.current_philosophers
-    logging.info(f"Initializing chat session with {philosopher_names}")
+    logger.info(f"Initializing chat session with {philosopher_names}")
     multi_chatbots = MultiChatbots(philosophers=philosopher_names)
     st.session_state.multi_chatbots = multi_chatbots
 
