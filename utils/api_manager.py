@@ -19,10 +19,11 @@ class APIKeyManager:
 
     def display_api_form(self):
         with st.sidebar:
-            st.title("API Manager")
+            st.title("OpenAI API Manager")
 
             self.use_local_key = st.checkbox(
-                "Use local API key",
+                label="Default API key",
+                help="Use my own API key, if you don't have any.",
                 on_change=self.check_api_key,
                 value=st.session_state.get("use_local_key", False),
                 key="use_local_key",
@@ -31,7 +32,7 @@ class APIKeyManager:
 
             with st.form("api_form"):
                 self.user_api_key = st.text_input(
-                    label="Enter OpenAI API key:",
+                    label="Enter your API key:",
                     value=self.user_api_key,
                     placeholder="sk-...",
                     type="password",
