@@ -3,8 +3,8 @@ import logging
 import streamlit as st
 
 from chatbots import SingleChatbot
-from utils.api_key import configure_openai_api_key
-from utils.chat_history import display_history, display_msg
+from utils.chat_history import display_history
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,7 +27,7 @@ selectbox_placeholder = st.empty()
 
 
 def initialize_chat():
-    if not st.session_state.get("_OPENAI_API_KEY"):
+    if not st.session_state.get("OPENAI_API_KEY"):
         return
 
     philosopher = st.session_state.current_philosopher
@@ -42,8 +42,7 @@ def initialize_chat():
 
 @display_history
 def main():
-    configure_openai_api_key()
-
+    st.session_state.api_key_manager.display_api_form()
     st.session_state.setdefault(
         "chatbots", {philosopher: None for philosopher in PHILOSOPHER_OPTIONS}
     )
@@ -59,13 +58,13 @@ def main():
             options=PHILOSOPHER_OPTIONS,
             index=None,
             on_change=initialize_chat,
-            disabled=st.session_state.get("_OPENAI_API_KEY") is None,
+            disabled=st.session_state.get("OPENAI_API_KEY") is None,
         )
 
     if user_query := st.chat_input(
         placeholder="Ask me anything!",
         disabled=st.session_state.get("chatbot") is None
-        or st.session_state.get("_OPENAI_API_KEY") is None,
+        or st.session_state.get("OPENAI_API_KEY") is None,
     ):
         st.session_state.chatbot.chat(user_query)
 
