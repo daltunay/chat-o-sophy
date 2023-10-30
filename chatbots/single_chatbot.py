@@ -2,13 +2,15 @@ import streamlit as st
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 
 from utils.logging import configure_logger
-from utils.streaming import (StreamingChatCallbackHandler,
-                             StreamingStdOutCallbackHandler)
+from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
 logger = configure_logger(__file__)
 
@@ -16,73 +18,85 @@ INITIAL_PROMPT = "I am your guest. Please present yourself, greet me, and explai
 
 
 class SingleChatbot:
-    def __init__(self, philosopher, role="assistant"):
+    def __init__(self, philosopher):
         logger.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
-        if role == "assistant":
-            self.role = "assistant"
-        elif role == "name":
-            self.role = philosopher
-        self.history = st.session_state.history[philosopher]
+        self._cached_template = None
+        self._cached_memory = None
+        self._cached_callbacks = None
+        self._cached_llm = None
+        self._cached_chain = None
+
+    def __str__(self):
+        return f"Chatbot: {self.philosopher}"
+
+    def __repr__(self):
+        return f"SingleChatbot(philosopher='{self.philosopher}')"
 
     @property
-    @st.cache_resource
-    def template(_self):
+    def template(self):
         logger.info("Initializing template")
-        return ChatPromptTemplate.from_messages(
-            [
-                SystemMessagePromptTemplate.from_template(
-                    "You are {philosopher}, the philosopher."
-                ),
-                MessagesPlaceholder(variable_name="history"),
-                HumanMessagePromptTemplate.from_template("{input}"),
-            ]
-        )
+        if self._cached_template is None:
+            self._cached_template = ChatPromptTemplate.from_messages(
+                [
+                    SystemMessagePromptTemplate.from_template(
+                        "You are {philosopher}, the philosopher."
+                    ),
+                    MessagesPlaceholder(variable_name="history"),
+                    HumanMessagePromptTemplate.from_template("{input}"),
+                ]
+            )
+        return self._cached_template
 
     @property
-    @st.cache_resource
-    def memory(_self):
+    def memory(self):
         logger.info("Initializing memory")
-        return ConversationBufferMemory(
-            memory_key="history",
-            input_key="input",
-            return_messages=True,
-            human_prefix="User",
-            ai_prefix="Philosopher",
-        )
+        if self._cached_memory is None:
+            self._cached_memory = ConversationBufferMemory(
+                memory_key="history",
+                input_key="input",
+                return_messages=True,
+            )
+        return self._cached_memory
 
+    @property
     def callbacks(self):
         logger.info("Initializing callbacks")
-        return [StreamingStdOutCallbackHandler(), StreamingChatCallbackHandler()]
+        callbacks = [
+            StreamingStdOutCallbackHandler(),
+            StreamingChatCallbackHandler(),
+        ]
+        return callbacks
 
     @property
-    @st.cache_resource
-    def llm(_self):
+    def llm(self):
         logger.info("Initializing LLM")
-        return ChatOpenAI(model_name="gpt-3.5-turbo", streaming=True)
+        return ChatOpenAI(
+            model_name="gpt-3.5-turbo",
+            streaming=True,
+        )
 
     @property
-    @st.cache_resource
-    def chain(_self):
+    def chain(self):
         logger.info("Initializing chain")
-        return LLMChain(
-            llm=_self.llm, memory=_self.memory, prompt=_self.template, verbose=True
-        )
+        if self._cached_chain is None:
+            self._cached_chain = LLMChain(
+                llm=self.llm,
+                memory=self.memory,
+                prompt=self.template,
+                verbose=True,
+            )
+        return self._cached_chain
 
     def greet(self):
         logger.info("Generating greetings")
-        self.chat(
-            prompt=INITIAL_PROMPT,
-            save_user_message=False,
-        )
+        self.greeted = True
+        return self.chat(prompt=INITIAL_PROMPT)
 
-    def chat(self, prompt, save_user_message=True):
+    def chat(self, prompt):
         logger.info("Answering user prompt")
-        if save_user_message:
-            st.chat_message("user").write(prompt)
-            self.history.append({"role": "user", "content": prompt})
-        with st.chat_message(self.role):
-            bot_response = self.chain.run(
-                input=prompt, philosopher=self.philosopher, callbacks=self.callbacks()
-            )
-            self.history.append({"role": self.role, "content": bot_response})
+        return self.chain.run(
+            input=prompt,
+            philosopher=self.philosopher,
+            callbacks=self.callbacks,
+        )

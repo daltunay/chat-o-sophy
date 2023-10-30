@@ -9,7 +9,9 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 def main():
     logger.info("Running home")
-    st.session_state.setdefault("api_key_manager", APIKeyManager())
+    if "api_key_manager" not in st.session_state:
+        st.session_state.clear()
+        st.session_state.api_key_manager = APIKeyManager()
     st.session_state.api_key_manager.display_api_form()
 
     col1, col2 = st.columns(spec=[1, 0.5], gap="large")

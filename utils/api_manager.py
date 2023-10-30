@@ -47,7 +47,7 @@ class APIKeyManager:
                     use_container_width=True,
                     disabled=self.use_local_key,
                     on_click=self.check_api_key,
-                    kwargs={"type": "user"},
+                    kwargs={"type": "human"},
                 )
 
         if st.session_state.get("valid_api_key"):
@@ -67,7 +67,7 @@ class APIKeyManager:
 
         if type == "local" and st.session_state.get("use_local_key"):
             api_key = self.local_api_key
-        elif type == "user":
+        elif type == "human":
             api_key = self.user_api_key
 
         try:

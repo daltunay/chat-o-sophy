@@ -1,15 +1,21 @@
 import streamlit as st
+from langchain.schema.messages import HumanMessage, AIMessage
 
 
 # decorator
 def display_history(func):
-    def wrapper(*args, **kwargs):
-        current_philosopher = st.session_state.get("current_philosopher")
-        if current_philosopher:
-            history = st.session_state.history.get(current_philosopher, [])
-            for message in history:
-                st.chat_message(message["role"]).write(message["content"])
+    try:
+        current_choice = st.session_state["single_mode.current_choice"]
+        current_chatbot = st.session_state.single_mode[current_choice]
+        for message in current_chatbot.memory.chat_memory.messages:
+            if isinstance(message, AIMessage):
+                st.chat_message("ai").write(message.content)
+            if isinstance(message, HumanMessage):
+                st.chat_message("human").write(message.content)
+    except Exception:
+        print("ERROR WHEN DISPLAYING History")
 
-        return func(*args, **kwargs)
+    def execute(*args, **kwargs):
+        func(*args, **kwargs)
 
-    return wrapper
+    return execute

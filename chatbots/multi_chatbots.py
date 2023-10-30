@@ -20,7 +20,7 @@ class MultiChatbots:
 
     def ask(self, prompt):
         logger.info("Answering user question")
-        st.chat_message("user").write(prompt)
+        st.chat_message("human").write(prompt)
         for chatbot in self.chatbots:
             st.subheader(chatbot.philosopher, divider="gray")
             chatbot.chat(prompt=prompt, save_user_message=False)
