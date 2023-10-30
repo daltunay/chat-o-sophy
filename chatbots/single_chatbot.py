@@ -91,7 +91,6 @@ class SingleChatbot:
 
     def greet(self):
         logger.info("Generating greetings")
-        self.greeted = True
         return self.chat(prompt=INITIAL_PROMPT)
 
     def chat(self, prompt):
@@ -106,7 +105,7 @@ class SingleChatbot:
 
     def update_history(self):
         self.history = []
-        for message in self.memory.chat_memory.messages:
+        for message in self.memory.chat_memory.messages[1:]:
             if isinstance(message, AIMessage):
                 self.history.append({"role": "assistant", "content": message.content})
             elif isinstance(message, HumanMessage):

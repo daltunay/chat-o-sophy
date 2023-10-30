@@ -51,6 +51,9 @@ def main():
     if current_choice := st.session_state.single_mode["current_choice"]:
         logger.info(f"Switching to {current_choice}")
         chatbot = st.session_state.single_mode["chatbots"][current_choice]
+        if chatbot.history == []:
+            with st.chat_message("ai"):
+                chatbot.greet()
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
