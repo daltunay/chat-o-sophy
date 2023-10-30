@@ -12,8 +12,8 @@ if single_mode := st.session_state.get("single_mode"):
         memory = chatbot.memory
         for message in memory.chat_memory.messages:
             if isinstance(message, AIMessage):
-                message = {"role": "assistant", "content": message.content}
+                message = {"role": "ai", "content": message.content}
                 st.write(message)
             if isinstance(message, HumanMessage):
-                message = {"role": "user", "content": message.content}
+                message = {"role": "human", "content": message.content}
                 st.write(message)

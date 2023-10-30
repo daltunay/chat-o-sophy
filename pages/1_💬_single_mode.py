@@ -1,7 +1,7 @@
 import streamlit as st
 
-from chatbots import SingleChatbot
-from utils.chat_history import display_history
+from chatbots import PhilosopherChatbot
+from history import display_chat_history
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -9,7 +9,28 @@ logger = configure_logger(__file__)
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
 
 
-PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer", "Aristotle"]
+PHILOSOPHERS = [
+    "Plato",
+    "Aristotle",
+    "Socrates",
+    "Confucius",
+    "Immanuel Kant",
+    "René Descartes",
+    "David Hume",
+    "John Locke",
+    "Friedrich Nietzsche",
+    "Thomas Aquinas",
+    "Jean-Jacques Rousseau",
+    "Baruch Spinoza",
+    "Ludwig Wittgenstein",
+    "Søren Kierkegaard",
+    "Voltaire",
+    "John Stuart Mill",
+    "Karl Marx",
+    "George Berkeley",
+    "Arthur Schopenhauer",
+    "G.W.F. Hegel",
+]
 
 
 @st.cache_resource
@@ -21,7 +42,7 @@ def initialize_single_mode():
         "chatbots": {},
     }
     for philosopher in PHILOSOPHERS:
-        single_mode["chatbots"][philosopher] = SingleChatbot(philosopher)
+        single_mode["chatbots"][philosopher] = PhilosopherChatbot(philosopher)
 
     return single_mode
 
@@ -29,7 +50,7 @@ def initialize_single_mode():
 st.session_state.single_mode = initialize_single_mode()
 
 
-@display_history
+@display_chat_history
 def main():
     logger.info("Running single mode")
 

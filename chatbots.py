@@ -10,38 +10,33 @@ from langchain.prompts import (
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.logging import configure_logger
-from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
+from streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
 
 logger = configure_logger(__file__)
 
-INITIAL_PROMPT = "I am your guest. Please present yourself, greet me, and explain me the main topics you are interested in as a philosopher. Keep it very short."
 
-
-class SingleChatbot:
-    def __init__(self, philosopher):
-        logger.info(f"Initializing chatbot: {philosopher}")
+class Chatbot:
+    def __init__(self, bot_type, philosopher, **kwargs):
+        self.bot_type = bot_type
         self.philosopher = philosopher
-        self.history = []
         self._cached_template = None
         self._cached_memory = None
         self._cached_llm = None
         self._cached_chain = None
-
-    def __str__(self):
-        return f"Chatbot: {self.philosopher}"
-
-    def __repr__(self):
-        return f"SingleChatbot(philosopher='{self.philosopher}')"
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     @property
     def template(self):
-        logger.info("Initializing template")
         if self._cached_template is None:
+            if self.bot_type == "assistant":
+                message = "You are an assistant, of whom the purpose will be to summarize some philosophers' responses."
+            elif self.bot_type == "philosopher":
+                message = "You are the famous philosopher {philosopher}. Please chat with the user, impersonating {philosopher}."
+
             self._cached_template = ChatPromptTemplate.from_messages(
                 [
-                    SystemMessagePromptTemplate.from_template(
-                        "You are {philosopher}, the philosopher."
-                    ),
+                    SystemMessagePromptTemplate.from_template(message),
                     MessagesPlaceholder(variable_name="history"),
                     HumanMessagePromptTemplate.from_template("{input}"),
                 ]
@@ -50,7 +45,6 @@ class SingleChatbot:
 
     @property
     def memory(self):
-        logger.info("Initializing memory")
         if self._cached_memory is None:
             self._cached_memory = ConversationBufferMemory(
                 memory_key="history",
@@ -61,7 +55,6 @@ class SingleChatbot:
 
     @property
     def callbacks(self):
-        logger.info("Initializing callbacks")
         return [
             StreamingStdOutCallbackHandler(),
             StreamingChatCallbackHandler(),
@@ -69,7 +62,6 @@ class SingleChatbot:
 
     @property
     def llm(self):
-        logger.info("Initializing LLM")
         if self._cached_llm is None:
             self._cached_llm = ChatOpenAI(
                 model_name="gpt-3.5-turbo",
@@ -79,7 +71,6 @@ class SingleChatbot:
 
     @property
     def chain(self):
-        logger.info("Initializing chain")
         if self._cached_chain is None:
             self._cached_chain = LLMChain(
                 llm=self.llm,
@@ -89,12 +80,18 @@ class SingleChatbot:
             )
         return self._cached_chain
 
+
+class PhilosopherChatbot(Chatbot):
+    def __init__(self, philosopher, **kwargs):
+        super().__init__(bot_type="philosopher", philosopher=philosopher, **kwargs)
+        self.history = []
+
     def greet(self):
-        logger.info("Generating greetings")
-        return self.chat(prompt=INITIAL_PROMPT)
+        return self.chat(
+            prompt="I am your guest. Please present yourself, and greet me."
+        )
 
     def chat(self, prompt):
-        logger.info("Answering user prompt")
         response = self.chain.run(
             input=prompt,
             philosopher=self.philosopher,
@@ -107,6 +104,30 @@ class SingleChatbot:
         self.history = []
         for message in self.memory.chat_memory.messages[1:]:
             if isinstance(message, AIMessage):
-                self.history.append({"role": "assistant", "content": message.content})
+                self.history.append({"role": "ai", "content": message.content})
             elif isinstance(message, HumanMessage):
-                self.history.append({"role": "user", "content": message.content})
+                self.history.append({"role": "human", "content": message.content})
+
+
+class AssistantChatbot(Chatbot):
+    def __init__(self, history, **kwargs):
+        super().__init__(philosopher=None, bot_type="assistant", **kwargs)
+        self.history = history
+
+    @property
+    def history_str(self):
+        return "\n\n".join(
+            [
+                f"{message['role']}'s response: {message['content']}"
+                for message in self.history
+            ]
+        )
+
+    def summarize_responses(self):
+        return self.chain.run(input=self.history_str, callbacks=self.callbacks)
+
+    def create_markdown_table(self):
+        return self.chain.run(
+            input="Synthesize all of this in a markdown table. Just give the markdown output.",
+            callbacks=self.callbacks,
+        )
