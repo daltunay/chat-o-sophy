@@ -4,6 +4,8 @@ from utils.api_manager import APIKeyManager
 from utils.logging import configure_logger
 from utils.logo import generate_logo
 
+logger = configure_logger(__file__)
+
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 
@@ -72,5 +74,4 @@ def main():
 
 
 if __name__ == "__main__":
-    logger = configure_logger(__file__)
     main()

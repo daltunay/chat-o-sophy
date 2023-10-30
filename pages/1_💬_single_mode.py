@@ -4,6 +4,8 @@ from chatbots import SingleChatbot
 from utils.chat_history import display_history
 from utils.logging import configure_logger
 
+logger = configure_logger(__file__)
+
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
 
 
@@ -13,17 +15,24 @@ PHILOSOPHERS = ["Nietzsche", "Plato", "Schopenhauer", "Aristotle"]
 @st.cache_resource
 def initialize_single_mode():
     logger.info("Initializing single mode")
-    single_mode = {"header_container": st.empty(), "current_choice": None}
+    single_mode = {
+        "header_container": st.empty(),
+        "current_choice": None,
+        "chatbots": {},
+    }
     for philosopher in PHILOSOPHERS:
-        single_mode[philosopher] = SingleChatbot(philosopher)
+        single_mode["chatbots"][philosopher] = SingleChatbot(philosopher)
 
     return single_mode
+
+
+st.session_state.single_mode = initialize_single_mode()
 
 
 @display_history
 def main():
     logger.info("Running single mode")
-    st.session_state.single_mode = initialize_single_mode()
+
     if api_key_manager := st.session_state.get("api_key_manager"):
         api_key_manager.display_api_form()
 
@@ -40,7 +49,8 @@ def main():
         )
 
     if current_choice := st.session_state.single_mode["current_choice"]:
-        chatbot = st.session_state.single_mode[current_choice]
+        logger.info(f"Switching to {current_choice}")
+        chatbot = st.session_state.single_mode["chatbots"][current_choice]
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
@@ -55,5 +65,4 @@ def main():
 
 
 if __name__ == "__main__":
-    logger = configure_logger(__file__)
     main()

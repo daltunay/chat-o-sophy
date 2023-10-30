@@ -1,4 +1,3 @@
-import streamlit as st
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -8,6 +7,7 @@ from langchain.prompts import (
     MessagesPlaceholder,
     SystemMessagePromptTemplate,
 )
+from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.logging import configure_logger
 from utils.streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
@@ -21,9 +21,9 @@ class SingleChatbot:
     def __init__(self, philosopher):
         logger.info(f"Initializing chatbot: {philosopher}")
         self.philosopher = philosopher
+        self.history = []
         self._cached_template = None
         self._cached_memory = None
-        self._cached_callbacks = None
         self._cached_llm = None
         self._cached_chain = None
 
@@ -62,19 +62,20 @@ class SingleChatbot:
     @property
     def callbacks(self):
         logger.info("Initializing callbacks")
-        callbacks = [
+        return [
             StreamingStdOutCallbackHandler(),
             StreamingChatCallbackHandler(),
         ]
-        return callbacks
 
     @property
     def llm(self):
         logger.info("Initializing LLM")
-        return ChatOpenAI(
-            model_name="gpt-3.5-turbo",
-            streaming=True,
-        )
+        if self._cached_llm is None:
+            self._cached_llm = ChatOpenAI(
+                model_name="gpt-3.5-turbo",
+                streaming=True,
+            )
+        return self._cached_llm
 
     @property
     def chain(self):
@@ -95,8 +96,18 @@ class SingleChatbot:
 
     def chat(self, prompt):
         logger.info("Answering user prompt")
-        return self.chain.run(
+        response = self.chain.run(
             input=prompt,
             philosopher=self.philosopher,
             callbacks=self.callbacks,
         )
+        self.update_history()
+        return response
+
+    def update_history(self):
+        self.history = []
+        for message in self.memory.chat_memory.messages:
+            if isinstance(message, AIMessage):
+                self.history.append({"role": "assistant", "content": message.content})
+            elif isinstance(message, HumanMessage):
+                self.history.append({"role": "user", "content": message.content})

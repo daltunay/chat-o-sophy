@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 from utils.logging import configure_logger
