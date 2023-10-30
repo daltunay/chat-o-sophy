@@ -55,7 +55,7 @@ def main():
     logger.info("Running single mode")
 
     if api_key_manager := st.session_state.get("api_key_manager"):
-        api_key_manager.display_api_form()
+        api_key_manager.display()
 
     with st.session_state.single_mode["header_container"].container():
         st.title("Single mode", anchor=False)

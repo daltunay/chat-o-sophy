@@ -20,7 +20,7 @@ initialize_api_key_manager()
 
 def main():
     logger.info("Running home")
-    st.session_state.api_key_manager.display_api_form()
+    st.session_state.api_key_manager.display()
 
     col1, col2 = st.columns(spec=[1, 0.5], gap="large")
     with col1:

@@ -20,7 +20,7 @@ class APIKeyManager:
         self.use_local_key = st.session_state.get("use_local_key", False)
         self.user_api_key = st.session_state.get("user_api_key", "")
 
-    def display_api_form(self):
+    def display(self):
         with st.sidebar:
             st.title("OpenAI API Manager")
 

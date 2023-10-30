@@ -51,7 +51,7 @@ def main():
     logger.info("Running multi mode")
 
     if api_key_manager := st.session_state.get("api_key_manager"):
-        api_key_manager.display_api_form()
+        api_key_manager.display()
 
     with st.session_state.multi_mode["header_container"].container():
         st.title("Multi mode", anchor=False)
