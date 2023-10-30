@@ -4,7 +4,7 @@ import streamlit as st
 
 
 # decorator
-def display_history(func):
+def display_chat_history(func):
     def execute(*args, **kwargs):
         with contextlib.suppress(Exception):
             current_choice = st.session_state.single_mode["current_choice"]

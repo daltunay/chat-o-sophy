@@ -51,10 +51,8 @@ class APIKeyManager:
                 )
 
         if st.session_state.get("valid_api_key"):
-            logger.info("Authentication to OpenAI API successful")
             st.sidebar.success("Successfully authenticated", icon="🔐")
         else:
-            logger.info("Authentication to OpenAI API failed")
             st.sidebar.error("Please add your OpenAI API key to continue")
             st.sidebar.info(
                 "Obtain your key from: https://platform.openai.com/account/api-keys"
@@ -74,10 +72,12 @@ class APIKeyManager:
             openai.api_key = api_key
             _ = openai.Model.list()
             st.toast("Authentication successful!", icon="✅")
+            logger.info("Authentication to OpenAI API successful")
             st.session_state.valid_api_key = True
             self.store_api_key(api_key)
         except openai.error.AuthenticationError:
             st.toast("Authentication error", icon="🚫")
+            logger.info("Authentication to OpenAI API failed")
             st.session_state.valid_api_key = False
             self.delete_api_key()
 

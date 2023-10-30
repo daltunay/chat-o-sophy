@@ -13,11 +13,27 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
         self.container.markdown(self.response)
 
 
-class StreamingCallbacks:
-    def __init__(self) -> None:
-        self.chat_callback = StreamingChatCallbackHandler()
-        self.stdout_callback = StreamingStdOutCallbackHandler()
+class BusyCallbackHandler(BaseCallbackHandler):  # TODO: implement in pages
+    def __init__(self):
+        pass
+
+    def on_llm_start(self, *args, **kwargs):
+        st.session_state.busy = True
+
+    def on_llm_end(self, *args, **kwargs):
+        st.session_state.busy = False
+
+
+class CallbackHandlers:
+    def __init__(self):
+        self.chat_callback_handler = StreamingChatCallbackHandler()
+        self.stdout_callback_handler = StreamingStdOutCallbackHandler()
+        self.busy_callback_handler = BusyCallbackHandler()
 
     @property
     def callbacks(self):
-        return [self.chat_callback, self.stdout_callback]
+        return [
+            self.chat_callback_handler,
+            self.stdout_callback_handler,
+            self.busy_callback_handler,
+        ]

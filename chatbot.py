@@ -9,22 +9,20 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from streaming import StreamingCallbacks
+from streaming import CallbackHandlers
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
 
 class Chatbot:
-    def __init__(self, bot_type, philosopher, **kwargs):
+    def __init__(self, bot_type, philosopher):
         self.bot_type = bot_type
         self.philosopher = philosopher
         self._cached_template = None
         self._cached_memory = None
         self._cached_llm = None
         self._cached_chain = None
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     @property
     def template(self):
@@ -55,8 +53,8 @@ class Chatbot:
 
     @property
     def callbacks(self):
-        streaming_callbacks = StreamingCallbacks()
-        return streaming_callbacks.callbacks
+        callback_handlers = CallbackHandlers()
+        return callback_handlers.callbacks
 
     @property
     def llm(self):
@@ -80,8 +78,8 @@ class Chatbot:
 
 
 class PhilosopherChatbot(Chatbot):
-    def __init__(self, philosopher, **kwargs):
-        super().__init__(bot_type="philosopher", philosopher=philosopher, **kwargs)
+    def __init__(self, philosopher):
+        super().__init__(bot_type="philosopher", philosopher=philosopher)
         self.history = []
 
     def greet(self):
@@ -108,8 +106,8 @@ class PhilosopherChatbot(Chatbot):
 
 
 class AssistantChatbot(Chatbot):
-    def __init__(self, history, **kwargs):
-        super().__init__(philosopher=None, bot_type="assistant", **kwargs)
+    def __init__(self, history):
+        super().__init__(philosopher=None, bot_type="assistant")
         self.history = history
 
     @property
