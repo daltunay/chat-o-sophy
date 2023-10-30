@@ -1,8 +1,8 @@
 import streamlit as st
 
 from api import APIKeyManager
-from utils.logging import configure_logger
 from logo import generate_logo
+from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 

@@ -9,8 +9,8 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from utils.logging import configure_logger
 from streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
+from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 

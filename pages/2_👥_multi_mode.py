@@ -1,6 +1,6 @@
 import streamlit as st
 
-from chatbots import PhilosopherChatbot, AssistantChatbot
+from chatbot import AssistantChatbot, PhilosopherChatbot
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
