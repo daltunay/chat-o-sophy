@@ -9,7 +9,7 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from streaming import StreamingChatCallbackHandler, StreamingStdOutCallbackHandler
+from streaming import StreamingCallbacks
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -55,10 +55,8 @@ class Chatbot:
 
     @property
     def callbacks(self):
-        return [
-            StreamingStdOutCallbackHandler(),
-            StreamingChatCallbackHandler(),
-        ]
+        streaming_callbacks = StreamingCallbacks()
+        return streaming_callbacks.callbacks
 
     @property
     def llm(self):

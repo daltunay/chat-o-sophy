@@ -1,6 +1,6 @@
 import streamlit as st
 
-from chatbots import PhilosopherChatbot
+from chatbot import PhilosopherChatbot
 from history import display_chat_history
 from utils.logging import configure_logger
 
