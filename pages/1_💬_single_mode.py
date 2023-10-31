@@ -33,6 +33,10 @@ PHILOSOPHERS = [
 ]
 
 
+def switch_philosopher():
+    pass
+
+
 @display_chat_history
 def main():
     logger.info("Running single mode")
@@ -55,12 +59,13 @@ def main():
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
             index=None,
+            on_change=switch_philosopher,
             disabled=not st.session_state.get("OPENAI_API_KEY"),
         )
 
     if current_choice:
         logger.info(f"Switching to {current_choice}")
-        chatbot = st.session_state["chatbots"][current_choice]
+        chatbot = st.session_state.chatbots[current_choice]
         st.session_state.current_chatbot = chatbot
         if chatbot.history == []:
             with st.spinner(f"{current_choice} is writing..."):
