@@ -33,10 +33,6 @@ PHILOSOPHERS = [
 ]
 
 
-def switch_philosopher():
-    pass
-
-
 @display_chat_history
 def main():
     logger.info("Running single mode")
@@ -59,7 +55,6 @@ def main():
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
             index=None,
-            on_change=switch_philosopher,
             disabled=not st.session_state.get("OPENAI_API_KEY"),
         )
 
