@@ -1,7 +1,7 @@
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
-from history import display_chat_history
+from utils.history import display_chat_history
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -74,7 +74,8 @@ def main():
         chatbot = st.session_state.single_mode["chatbots"][current_choice]
         if chatbot.history == []:
             with st.chat_message("ai"):
-                chatbot.greet()
+                with st.spinner(f"{current_choice} is writing..."):
+                    chatbot.greet()
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
@@ -85,7 +86,8 @@ def main():
     ):
         st.chat_message("human").write(prompt)
         with st.chat_message("ai"):
-            chatbot.chat(prompt)
+            with st.spinner(f"{current_choice} is writing..."):
+                chatbot.chat(prompt)
 
 
 if __name__ == "__main__":

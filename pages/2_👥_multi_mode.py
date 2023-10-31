@@ -78,7 +78,8 @@ def main():
             st.header(philosopher, divider="gray", anchor=False)
             chatbot = PhilosopherChatbot(philosopher)
             with st.chat_message("ai"):
-                answer = chatbot.chat(prompt=prompt)
+                with st.spinner(f"{philosopher} is writing..."):
+                    answer = chatbot.chat(prompt=prompt)
                 history.append({"role": philosopher, "content": answer})
 
         st.header(

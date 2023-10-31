@@ -1,16 +1,13 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-)
+from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
+                               MessagesPlaceholder,
+                               SystemMessagePromptTemplate)
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from streaming import CallbackHandlers
 from utils.logging import configure_logger
+from utils.streaming import CallbackHandlers
 
 logger = configure_logger(__file__)
 
