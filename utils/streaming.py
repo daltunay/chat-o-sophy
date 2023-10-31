@@ -12,6 +12,10 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
         self.response += token
         self.container.markdown(self.response, unsafe_allow_html=True)
 
+    def on_llm_end(self, *args, **kwargs):
+        # self.container.empty()
+        pass
+
 
 class BusyCallbackHandler(BaseCallbackHandler):  # TODO: implement in pages
     def __init__(self):

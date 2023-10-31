@@ -33,23 +33,6 @@ PHILOSOPHERS = [
 ]
 
 
-@st.cache_resource
-def initialize_single_mode():
-    logger.info("Initializing single mode")
-    single_mode = {
-        "header_container": st.empty(),
-        "current_choice": None,
-        "chatbots": {},
-    }
-    for philosopher in PHILOSOPHERS:
-        single_mode["chatbots"][philosopher] = PhilosopherChatbot(philosopher)
-
-    return single_mode
-
-
-st.session_state.single_mode = initialize_single_mode()
-
-
 @display_chat_history
 def main():
     logger.info("Running single mode")
@@ -57,11 +40,17 @@ def main():
     if api_key_manager := st.session_state.get("api_key_manager"):
         api_key_manager.display()
 
-    with st.session_state.single_mode["header_container"].container():
+    st.session_state.setdefault("header_container", st.empty())
+    st.session_state.setdefault(
+        "chatbots",
+        {philosopher: PhilosopherChatbot(philosopher) for philosopher in PHILOSOPHERS},
+    )
+
+    with st.session_state["header_container"].container():
         st.title("Single mode", anchor=False)
         st.caption("Chat with the philosopher of your choice!")
 
-        st.session_state.single_mode["current_choice"] = st.selectbox(
+        current_choice = st.selectbox(
             label="Philosopher:",
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
@@ -69,24 +58,22 @@ def main():
             disabled=not st.session_state.get("OPENAI_API_KEY"),
         )
 
-    if current_choice := st.session_state.single_mode["current_choice"]:
+    if current_choice:
         logger.info(f"Switching to {current_choice}")
-        chatbot = st.session_state.single_mode["chatbots"][current_choice]
+        chatbot = st.session_state["chatbots"][current_choice]
+        st.session_state.current_chatbot = chatbot
         if chatbot.history == []:
-            with st.chat_message("ai"):
-                with st.spinner(f"{current_choice} is writing..."):
+            with st.spinner(f"{current_choice} is writing..."):
+                with st.chat_message("ai"):
                     chatbot.greet()
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (
-            st.session_state.single_mode["current_choice"]
-            and st.session_state.get("OPENAI_API_KEY")
-        ),
+        disabled=not (current_choice and st.session_state.get("OPENAI_API_KEY")),
     ):
         st.chat_message("human").write(prompt)
-        with st.chat_message("ai"):
-            with st.spinner(f"{current_choice} is writing..."):
+        with st.spinner(f"{current_choice} is writing..."):
+            with st.chat_message("ai"):
                 chatbot.chat(prompt)
 
 

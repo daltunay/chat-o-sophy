@@ -105,7 +105,7 @@ class PhilosopherChatbot(Chatbot):
 
     def update_history(self):
         self.history = []
-        for message in self.memory.chat_memory.messages[1:]:
+        for message in self.memory.chat_memory.messages:
             if isinstance(message, AIMessage):
                 self.history.append({"role": "ai", "content": message.content})
             elif isinstance(message, HumanMessage):
