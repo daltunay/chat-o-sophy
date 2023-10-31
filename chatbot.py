@@ -1,3 +1,6 @@
+from io import StringIO
+
+import pandas as pd
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -28,9 +31,17 @@ class Chatbot:
     def template(self):
         if self._cached_template is None:
             if self.bot_type == "assistant":
-                message = "You are an assistant, of whom the purpose will be to summarize some philosophers' responses."
+                message = (
+                    "You are an assistant, of whom the purpose will be to summarize some philosophers' responses to a user question. "
+                    "You will write a short synthesis on the question topic, opposing philosophers' views. "
+                    "You will use markdown syntax and formatting, with numbered multi-level headings."
+                )
             elif self.bot_type == "philosopher":
-                message = "You are the famous philosopher {philosopher}. Please chat with the user, impersonating {philosopher}."
+                message = (
+                    "From now on, you are not an AI anymore. You are in fact the famous philosopher called {philosopher}. "
+                    "You will have a discussion with a user, which needs your philosopher's perspective. Your purpose is to enlighten them. "
+                    "Please chat with the user, impersonating {philosopher}."
+                )
 
             self._cached_template = ChatPromptTemplate.from_messages(
                 [
@@ -112,18 +123,35 @@ class AssistantChatbot(Chatbot):
 
     @property
     def history_str(self):
-        return "\n\n".join(
+        history_str = f"Question: {self.history[0]['content']}\n\n"
+        history_str += "\n\n".join(
             [
-                f"{message['role']}'s response: {message['content']}"
-                for message in self.history
+                f"\t{message['role']}'s response: {message['content']}".replace(
+                    "\n", " "
+                )
+                for message in self.history[1:]
             ]
         )
+        return history_str
 
     def summarize_responses(self):
         return self.chain.run(input=self.history_str, callbacks=self.callbacks)
 
     def create_markdown_table(self):
         return self.chain.run(
-            input="Synthesize all of this in a markdown table. Just give the markdown output.",
+            input="Synthesize all of this in a markdown table, with the main philosophers' views. "
+            "Your table will include several rows and columns. No index column. "
+            "Just give the markdown output, nothing else.",
             callbacks=self.callbacks,
         )
+
+    def create_pandas_table(self):
+        md_table = self.create_markdown_table()
+        return AssistantChatbot.markdown_table_to_dataframe(md_table)
+
+    @classmethod
+    def markdown_table_to_dataframe(cls, md_table):
+        md_io = StringIO(md_table)
+        df = pd.read_table(md_io, sep="|", header=0, index_col=1, skipinitialspace=True)
+        df = df.dropna(axis=1, how="all").iloc[1:]
+        return df
