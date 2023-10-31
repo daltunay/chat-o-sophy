@@ -32,55 +32,38 @@ PHILOSOPHERS = [
 ]
 
 
-@st.cache_resource
-def initialize_multi_mode():
-    logger.info("Initializing multi mode")
-    multi_mode = {
-        "header_container": st.empty(),
-        "current_choices": [],
-    }
-
-    return multi_mode
-
-
-st.session_state.multi_mode = initialize_multi_mode()
-
-
 def main():
     logger.info("Running multi mode")
 
     if api_key_manager := st.session_state.get("api_key_manager"):
         api_key_manager.display()
 
-    with st.session_state.multi_mode["header_container"].container():
+    with st.container():
         st.title("Multi mode", anchor=False)
         st.caption("Ask a question to several philosophers!")
 
-        st.session_state.multi_mode["current_choices"] = st.multiselect(
+        current_choices = st.multiselect(
             label="Philosophers:",
             placeholder="Choose several philosophers",
             options=PHILOSOPHERS,
             max_selections=5,
             default=None,
-            disabled=st.session_state.get("OPENAI_API_KEY") is None,
+            disabled=not st.session_state.get("OPENAI_API_KEY"),
         )
 
     if prompt := st.chat_input(
         placeholder="What is your question?",
-        disabled=not (
-            st.session_state.multi_mode["current_choices"]
-            and st.session_state.get("OPENAI_API_KEY")
-        ),
+        disabled=not (current_choices and st.session_state.get("OPENAI_API_KEY")),
     ):
-        history = [{"role": "human", "content": prompt}]
         st.chat_message("human").write(prompt)
-        for philosopher in st.session_state.multi_mode["current_choices"]:
+        history = [{"role": "human", "content": prompt}]
+        for philosopher in current_choices:
             st.header(philosopher, divider="gray", anchor=False)
             chatbot = PhilosopherChatbot(philosopher)
             with st.chat_message("ai"):
                 with st.spinner(f"{philosopher} is writing..."):
                     answer = chatbot.chat(prompt=prompt)
-                history.append({"role": philosopher, "content": answer})
+                    history.append({"role": philosopher, "content": answer})
 
         st.header(
             "Synthesis",
