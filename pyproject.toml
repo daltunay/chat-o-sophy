@@ -4,7 +4,6 @@ version = "0.0.0"
 description = "Chat with your favorite philosohpers!"
 authors = ["Daniel Altunay"]
 readme = "README.md"
-packages = [{include = "chat_o_sophy"}]
 
 [tool.poetry.dependencies]
 langchain = "^0.0.323"
