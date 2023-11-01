@@ -26,7 +26,7 @@ def main():
     with col1:
         st.title("💭 chat-o-sophy", anchor=None)
         st.write(
-            "[![source code](https://img.shields.io/badge/view_source_code-gray?logo=github)](https://github.com/)"
+            "[![source code](https://img.shields.io/badge/view_source_code-gray?logo=github)](https://github.com/daltunay/chat-o-sophy)"
         )
         st.header("Chat with your favorite philosophers!", divider="gray", anchor=False)
         st.markdown(
