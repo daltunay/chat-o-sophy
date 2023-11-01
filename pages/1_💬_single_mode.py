@@ -17,7 +17,6 @@ PHILOSOPHERS = [
 ]
 
 
-@display_chat_history
 def main():
     logger.info("Running single mode")
 
@@ -46,6 +45,7 @@ def main():
         logger.info(f"Switching to {current_choice}")
         chatbot = st.session_state.chatbots[current_choice]
         st.session_state.current_chatbot = chatbot
+        display_chat_history()
         if chatbot.history == []:
             with st.spinner(f"{current_choice} is writing..."):
                 with st.chat_message("ai", avatar=chatbot.avatar):
