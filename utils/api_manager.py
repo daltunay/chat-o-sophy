@@ -15,7 +15,7 @@ class APIKeyManager:
     def __init__(self):
         logger.info("Initializing API key manager")
         self.local_api_key = st.session_state.get(
-            "local_api_key", os.getenv("LOCAL_OPENAI_API_KEY")
+            "local_api_key", st.secrets.openai_api.key
         )
         self.use_local_key = st.session_state.get("use_local_key", False)
         self.user_api_key = st.session_state.get("user_api_key", "")
