@@ -50,10 +50,11 @@ def main():
         )
 
     if current_choice:
-        logger.info(f"Switching to {current_choice}")
         chatbot = st.session_state.chatbots[current_choice]
         display_chat_history(chatbot)
         if chatbot.history == []:
+            logger.info(f"Switching to {current_choice}")
+            logger.info("Generating greetings")
             with st.spinner(f"{current_choice} is writing..."):
                 with st.chat_message("ai", avatar=chatbot.avatar):
                     chatbot.greet()
@@ -62,8 +63,10 @@ def main():
         placeholder="What do you want to know?",
         disabled=not (current_choice and os.getenv("OPENAI_API_KEY")),
     ):
+        logger.info("User prompt submitted")
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
+            logger.info("Generating response to user prompt")
             with st.chat_message("ai", avatar=chatbot.avatar):
                 chatbot.chat(prompt)
 
