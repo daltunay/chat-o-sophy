@@ -21,7 +21,7 @@ def main():
         st.sidebar.divider()
         st.session_state.api_manager.display()
 
-    col1, col2 = st.columns(spec=[1, 0.5], gap="large")
+    col1, col2 = st.columns(spec=[0.7, 0.3], gap="large")
     with col1:
         st.title("💭 chat-o-sophy", anchor=None)
         st.write(

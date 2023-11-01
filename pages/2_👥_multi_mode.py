@@ -42,6 +42,9 @@ def main():
             disabled=not os.getenv("OPENAI_API_KEY"),
         )
 
+    if not os.getenv("OPENAI_API_KEY"):
+        st.error("Configure OpenAI API key in left sidebar to unlock selection")
+
     if prompt := st.chat_input(
         placeholder="What is your question?",
         disabled=not (current_choices and os.getenv("OPENAI_API_KEY")),

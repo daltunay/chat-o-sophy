@@ -29,7 +29,7 @@ def display_chat_history(chatbot):
 
 def main():
     logger.info("Running single mode")
-    
+
     st.session_state.setdefault("language_manager", LanguageManager())
     st.session_state.setdefault("api_manager", APIManager())
 
@@ -55,6 +55,9 @@ def main():
             index=None,
             disabled=not os.getenv("OPENAI_API_KEY"),
         )
+
+    if not os.getenv("OPENAI_API_KEY"):
+        st.error("Configure OpenAI API key in left sidebar to unlock selection")
 
     if current_choice:
         chatbot = st.session_state.chatbots[current_choice]

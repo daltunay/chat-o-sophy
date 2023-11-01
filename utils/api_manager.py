@@ -16,7 +16,7 @@ class APIManager:
         self.use_local_key = st.session_state.get("use_local_key", False)
         self.user_api_key = st.session_state.get("user_api_key", "")
 
-    def display(self):
+    def display(self, home=False):
         st.title("OpenAI API")
 
         self.use_local_key = st.checkbox(
@@ -48,9 +48,10 @@ class APIManager:
         if st.session_state.get("valid_api_key"):
             st.sidebar.success("Successfully authenticated", icon="🔐")
         else:
-            st.sidebar.error("Please add your OpenAI API key to continue")
+            st.sidebar.error("Please add your OpenAI API key to continue", icon="🔒")
             st.sidebar.info(
-                "Obtain your key from: https://platform.openai.com/account/api-keys"
+                "Obtain your key from: https://platform.openai.com/account/api-keys",
+                icon="💡",
             )
 
     def check_api_key(self, type: str):

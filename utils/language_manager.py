@@ -7,12 +7,12 @@ logger = configure_logger(__file__)
 
 class LanguageManager:
     def __init__(self):
-        self.languages = {
-            "English": "🇺🇸",
-            "Spanish": "🇪🇸",
-            "French": "🇫🇷",
-            "German": "🇩🇪",
-        }
+        self.languages = [
+            "English",
+            "Spanish",
+            "French",
+            "German",
+        ]
         self.selected_language = "English"
 
     def display(self):
@@ -20,10 +20,10 @@ class LanguageManager:
 
         self.selected_language = st.selectbox(
             label="Select chat language:",
-            options=list(self.languages.keys()),
-            index=list(self.languages.keys()).index(self.selected_language),
+            options=list(self.languages),
+            index=list(self.languages).index(self.selected_language),
             on_change=logger.info,
-            args=("Switching languages",)
+            args=("Switching languages",),
         )
 
         st.session_state.language = self.selected_language
