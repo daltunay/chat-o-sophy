@@ -39,7 +39,7 @@ def main():
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
             index=None,
-            disabled=not st.session_state.get("OPENAI_API_KEY"),
+            disabled=not os.getenv("OPENAI_API_KEY"),
         )
 
     if current_choice:
@@ -53,7 +53,7 @@ def main():
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (current_choice and st.session_state.get("OPENAI_API_KEY")),
+        disabled=not (current_choice and not os.getenv("OPENAI_API_KEY")),
     ):
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):

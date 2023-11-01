@@ -32,12 +32,12 @@ def main():
             options=PHILOSOPHERS,
             max_selections=5,
             default=None,
-            disabled=not st.session_state.get("OPENAI_API_KEY"),
+            disabled=not not os.getenv("OPENAI_API_KEY"),
         )
 
     if prompt := st.chat_input(
         placeholder="What is your question?",
-        disabled=not (current_choices and st.session_state.get("OPENAI_API_KEY")),
+        disabled=not (current_choices and not os.getenv("OPENAI_API_KEY")),
     ):
         st.chat_message("human").write(prompt)
         history = [{"role": "human", "content": prompt}]

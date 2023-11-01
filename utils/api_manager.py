@@ -80,10 +80,8 @@ class APIKeyManager:
 
     def store_api_key(self, api_key):
         logger.info("Storing API key in environment")
-        st.session_state.OPENAI_API_KEY = api_key
         os.environ["OPENAI_API_KEY"] = api_key
 
     def delete_api_key(self):
         logger.info("Deleting API key")
-        st.session_state.OPENAI_API_KEY = None
         os.environ.pop("OPENAI_API_KEY", None)
