@@ -1,5 +1,9 @@
 # chat-o-sophy
 
+**Chat with your favorite philosophers!**
+
+Access live deployed app here: https://chat-o-sophy.streamlit.app/
+
 ## Prerequisites
 
 Poetry: If Poetry is not installed, you can do so using pip:
