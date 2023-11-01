@@ -1,7 +1,9 @@
+import os
+
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
-from utils.history import display_chat_history
+from utils.chat_history import display_chat_history
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -10,26 +12,8 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
 
 
 PHILOSOPHERS = [
-    "Plato",
-    "Aristotle",
-    "Socrates",
-    "Confucius",
-    "Immanuel Kant",
-    "René Descartes",
-    "David Hume",
-    "John Locke",
-    "Friedrich Nietzsche",
-    "Thomas Aquinas",
-    "Jean-Jacques Rousseau",
-    "Baruch Spinoza",
-    "Ludwig Wittgenstein",
-    "Søren Kierkegaard",
-    "Voltaire",
-    "John Stuart Mill",
-    "Karl Marx",
-    "George Berkeley",
-    "Arthur Schopenhauer",
-    "G.W.F. Hegel",
+    os.path.splitext(filename)[0].replace("_", " ").title()
+    for filename in os.listdir("philosophers")
 ]
 
 
@@ -64,7 +48,7 @@ def main():
         st.session_state.current_chatbot = chatbot
         if chatbot.history == []:
             with st.spinner(f"{current_choice} is writing..."):
-                with st.chat_message("ai"):
+                with st.chat_message("ai", avatar=chatbot.avatar):
                     chatbot.greet()
 
     if prompt := st.chat_input(
@@ -73,7 +57,7 @@ def main():
     ):
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
-            with st.chat_message("ai"):
+            with st.chat_message("ai", avatar=chatbot.avatar):
                 chatbot.chat(prompt)
 
 

@@ -1,9 +1,12 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.logging import configure_logger
@@ -16,10 +19,19 @@ class Chatbot:
     def __init__(self, bot_type, philosopher):
         self.bot_type = bot_type
         self.philosopher = philosopher
+        self._cached_avatar = None
         self._cached_template = None
         self._cached_memory = None
         self._cached_llm = None
         self._cached_chain = None
+
+    @property
+    def avatar(self):
+        if self._cached_avatar is None:
+            self._cached_avatar = (
+                f"philosophers/{self.philosopher.lower().replace(' ', '_')}.jpeg"
+            )
+        return self._cached_avatar
 
     @property
     def template(self):

@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 
 from chatbot import AssistantChatbot, PhilosopherChatbot
@@ -9,26 +11,8 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
 
 
 PHILOSOPHERS = [
-    "Plato",
-    "Aristotle",
-    "Socrates",
-    "Confucius",
-    "Immanuel Kant",
-    "René Descartes",
-    "David Hume",
-    "John Locke",
-    "Friedrich Nietzsche",
-    "Thomas Aquinas",
-    "Jean-Jacques Rousseau",
-    "Baruch Spinoza",
-    "Ludwig Wittgenstein",
-    "Søren Kierkegaard",
-    "Voltaire",
-    "John Stuart Mill",
-    "Karl Marx",
-    "George Berkeley",
-    "Arthur Schopenhauer",
-    "G.W.F. Hegel",
+    os.path.splitext(filename)[0].replace("_", " ").title()
+    for filename in os.listdir("philosophers")
 ]
 
 
@@ -60,7 +44,7 @@ def main():
         for philosopher in current_choices:
             st.header(philosopher, divider="gray", anchor=False)
             chatbot = PhilosopherChatbot(philosopher)
-            with st.chat_message("ai"):
+            with st.chat_message("ai", avatar=chatbot.avatar):
                 with st.spinner(f"{philosopher} is writing..."):
                     answer = chatbot.chat(prompt=prompt)
                     history.append({"role": philosopher, "content": answer})
