@@ -31,7 +31,7 @@ def main():
 
     with st.container():
         st.title("Multi mode", anchor=False)
-        st.caption("Ask a question to several philosophers!")
+        st.caption("Ask a question to several philosophers at once!")
 
         current_choices = st.multiselect(
             label="Philosophers:",
@@ -43,7 +43,10 @@ def main():
         )
 
     if not os.getenv("OPENAI_API_KEY"):
-        st.error("Configure OpenAI API key in left sidebar to unlock selection")
+        st.error(
+            "Please configure your OpenAI API key in left sidebar to unlock selection",
+            icon="🔒",
+        )
 
     if prompt := st.chat_input(
         placeholder="What is your question?",

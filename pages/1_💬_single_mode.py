@@ -57,7 +57,10 @@ def main():
         )
 
     if not os.getenv("OPENAI_API_KEY"):
-        st.error("Configure OpenAI API key in left sidebar to unlock selection")
+        st.error(
+            "Please configure your OpenAI API key in left sidebar to unlock selection",
+            icon="🔒",
+        )
 
     if current_choice:
         chatbot = st.session_state.chatbots[current_choice]
