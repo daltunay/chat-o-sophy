@@ -1,6 +1,8 @@
-chat-o-sophy: chat with your favorite philosophers!
+# chat-o-sophy
 
-# Getting Started
+**Chat with your favorite philosophers!**
+
+Access live deployed app here: https://chat-o-sophy.streamlit.app/
 
 ## Prerequisites
 
