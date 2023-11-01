@@ -8,7 +8,7 @@ from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
+st.set_page_config(page_title="chat-o-sophy - single mode", page_icon="💭")
 
 
 PHILOSOPHERS = [
@@ -53,7 +53,7 @@ def main():
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (current_choice and not os.getenv("OPENAI_API_KEY")),
+        disabled=not (current_choice and os.getenv("OPENAI_API_KEY")),
     ):
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
