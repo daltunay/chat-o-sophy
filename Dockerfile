@@ -10,7 +10,7 @@ COPY pyproject.toml poetry.lock /app/
 # Install Poetry and project dependencies
 RUN pip install "poetry==1.4.2" \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-root --no-interaction --no-ansi
+    && poetry install --no-dev --no-root --no-interaction
 
 # Copy the rest of the application files
 COPY . /app

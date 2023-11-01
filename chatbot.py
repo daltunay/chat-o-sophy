@@ -1,25 +1,34 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from utils.logging import configure_logger
 from utils.streaming import CallbackHandlers
-
-logger = configure_logger(__file__)
 
 
 class Chatbot:
     def __init__(self, bot_type, philosopher):
         self.bot_type = bot_type
         self.philosopher = philosopher
+        self._cached_avatar = None
         self._cached_template = None
         self._cached_memory = None
         self._cached_llm = None
         self._cached_chain = None
+
+    @property
+    def avatar(self):
+        if self._cached_avatar is None:
+            self._cached_avatar = (
+                f"philosophers/{self.philosopher.lower().replace(' ', '_')}.jpeg"
+            )
+        return self._cached_avatar
 
     @property
     def template(self):
@@ -105,7 +114,7 @@ class PhilosopherChatbot(Chatbot):
 
     def update_history(self):
         self.history = []
-        for message in self.memory.chat_memory.messages:
+        for message in self.memory.chat_memory.messages[1:]:
             if isinstance(message, AIMessage):
                 self.history.append({"role": "ai", "content": message.content})
             elif isinstance(message, HumanMessage):

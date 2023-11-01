@@ -2,11 +2,8 @@ import os
 
 import openai
 import streamlit as st
-from dotenv import load_dotenv
 
 from utils.logging import configure_logger
-
-load_dotenv(".env")
 
 logger = configure_logger(__file__)
 
@@ -15,7 +12,7 @@ class APIKeyManager:
     def __init__(self):
         logger.info("Initializing API key manager")
         self.local_api_key = st.session_state.get(
-            "local_api_key", os.getenv("LOCAL_OPENAI_API_KEY")
+            "local_api_key", st.secrets.openai_api.key
         )
         self.use_local_key = st.session_state.get("use_local_key", False)
         self.user_api_key = st.session_state.get("user_api_key", "")
@@ -83,10 +80,8 @@ class APIKeyManager:
 
     def store_api_key(self, api_key):
         logger.info("Storing API key in environment")
-        st.session_state.OPENAI_API_KEY = api_key
         os.environ["OPENAI_API_KEY"] = api_key
 
     def delete_api_key(self):
         logger.info("Deleting API key")
-        st.session_state.OPENAI_API_KEY = None
         os.environ.pop("OPENAI_API_KEY", None)

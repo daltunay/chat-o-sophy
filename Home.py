@@ -63,9 +63,17 @@ def main():
     st.header("About", anchor=False, divider="gray")
     st.markdown(
         """
-        _chat-o-sophy_ harnesses the power of _Large Language Models_ (LLM) to allow you to chat with your favorite philosophers.  
-        Using the OpenAI API, this app employs GPT-3.5 via the `langchain` library, as well as DALL·E image generator.
+        _chat-o-sophy_ harnesses the power of Large Language Models (LLM) to allow you to chat with your favorite philosophers.  
+        Using the OpenAI API, this app employs GPT-3.5 via the `langchain` library, as well as DALL·E 2 for the logo generation.
         """
+    )
+
+    st.divider()
+
+    st.columns(3)[1].markdown(
+        "_Developed by Daniel Altunay_"
+        "[![LinkedIn](https://img.icons8.com/?id=13930&format=png)](https://linkedin.com/in/daltunay)"
+        "[![GitHub](https://img.icons8.com/?id=AZOZNnY73haj&format=png)](https://github.com/daltunay)"
     )
 
     with col2:
@@ -75,7 +83,6 @@ def main():
             label="Generate new logo",
             use_container_width=True,
             on_click=generate_logo.clear,
-            help="How it works: https://openai.com/dall-e-2",
         )
 
 

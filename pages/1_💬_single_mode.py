@@ -1,39 +1,30 @@
+import contextlib
+import os
+
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
-from utils.history import display_chat_history
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-st.set_page_config(page_title="chat-o-sophy", page_icon="💭")
+st.set_page_config(page_title="chat-o-sophy - single mode", page_icon="💭")
 
 
 PHILOSOPHERS = [
-    "Plato",
-    "Aristotle",
-    "Socrates",
-    "Confucius",
-    "Immanuel Kant",
-    "René Descartes",
-    "David Hume",
-    "John Locke",
-    "Friedrich Nietzsche",
-    "Thomas Aquinas",
-    "Jean-Jacques Rousseau",
-    "Baruch Spinoza",
-    "Ludwig Wittgenstein",
-    "Søren Kierkegaard",
-    "Voltaire",
-    "John Stuart Mill",
-    "Karl Marx",
-    "George Berkeley",
-    "Arthur Schopenhauer",
-    "G.W.F. Hegel",
+    os.path.splitext(filename)[0].replace("_", " ").title()
+    for filename in os.listdir("philosophers")
 ]
 
 
-@display_chat_history
+def display_chat_history(chatbot):
+    with contextlib.suppress(Exception):
+        for message in chatbot.history:
+            role, content = message["role"], message["content"]
+            avatar = chatbot.avatar if role == "ai" else None
+            st.chat_message(role, avatar=avatar).write(content)
+
+
 def main():
     logger.info("Running single mode")
 
@@ -55,25 +46,28 @@ def main():
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
             index=None,
-            disabled=not st.session_state.get("OPENAI_API_KEY"),
+            disabled=not os.getenv("OPENAI_API_KEY"),
         )
 
     if current_choice:
-        logger.info(f"Switching to {current_choice}")
         chatbot = st.session_state.chatbots[current_choice]
-        st.session_state.current_chatbot = chatbot
+        display_chat_history(chatbot)
         if chatbot.history == []:
+            logger.info(f"Switching to {current_choice}")
+            logger.info("Generating greetings")
             with st.spinner(f"{current_choice} is writing..."):
-                with st.chat_message("ai"):
+                with st.chat_message("ai", avatar=chatbot.avatar):
                     chatbot.greet()
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (current_choice and st.session_state.get("OPENAI_API_KEY")),
+        disabled=not (current_choice and os.getenv("OPENAI_API_KEY")),
     ):
+        logger.info("User prompt submitted")
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
-            with st.chat_message("ai"):
+            logger.info("Generating response to user prompt")
+            with st.chat_message("ai", avatar=chatbot.avatar):
                 chatbot.chat(prompt)
 
 
