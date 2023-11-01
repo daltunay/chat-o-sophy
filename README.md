@@ -1,6 +1,4 @@
-chat-o-sophy: chat with your favorite philosophers!
-
-# Getting Started
+# chat-o-sophy
 
 ## Prerequisites
 
