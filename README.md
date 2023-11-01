@@ -1,3 +1,5 @@
+chat-o-sophy: chat with your favorite philosophers!
+
 # Getting Started
 
 ## Prerequisites
@@ -25,6 +27,16 @@ poetry install
 ```
 
 This command will create a virtual environment and install the necessary dependencies.
+
+## (Optional) Setting up a default OpenAI API Key
+
+The application lets the user decide whether to use their own API key or the default one.  
+You can specifiy the default key in `.streamlit/secrets.toml`: 
+
+```toml
+[openai_api]
+key="sk-..."
+```
 
 ## Running the Application
 The _chat-o-sophy_ application can be run using either Poetry or Docker.
