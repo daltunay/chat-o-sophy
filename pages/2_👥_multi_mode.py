@@ -32,7 +32,7 @@ def main():
             options=PHILOSOPHERS,
             max_selections=5,
             default=None,
-            disabled=not not os.getenv("OPENAI_API_KEY"),
+            disabled=not os.getenv("OPENAI_API_KEY"),
         )
 
     if prompt := st.chat_input(
