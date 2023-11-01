@@ -9,10 +9,7 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from utils.logging import configure_logger
 from utils.streaming import CallbackHandlers
-
-logger = configure_logger(__file__)
 
 
 class Chatbot:
