@@ -1,21 +1,54 @@
-## How to Run
+# Getting Started
 
-To run the application, follow these steps:
+## Prerequisites
 
-### Step 1: Build the Docker Image
+Poetry: If Poetry is not installed, you can do so using pip:
 
-Execute the following command to build the Docker image:
+
+```bash
+pip install poetry
+```
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/chat-o-sophy.git
+cd chat-o-sophy
+```
+
+2. Set up the project dependencies using Poetry:
+
+```bash
+poetry install
+```
+
+This command will create a virtual environment and install the necessary dependencies.
+
+## Running the Application
+The _chat-o-sophy_ application can be run using either Poetry or Docker.
+
+### Using Poetry
+
+To run the application using Poetry:
+
+```bash
+poetry run streamlit run Home.py
+```
+
+### Using Docker
+
+1. Build the Docker image:
 
 ```bash
 docker build -t chat-o-sophy .
 ```
 
-### Step 2: Run the Application
-
-Once the image is built, run the application using the command:
+2. Run the application as a Docker container:
 
 ```bash
 docker run -p 8501:8501 chat-o-sophy
 ```
 
-This will start the _chat-o-sophy_ application and make it accessible locally at http://localhost:8501.
+Once the application is running, it will be accessible at http://localhost:8501 in your web browser.
