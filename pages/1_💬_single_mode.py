@@ -4,6 +4,8 @@ import os
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
+from utils.api_manager import APIManager
+from utils.language_manager import LanguageManager
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -27,9 +29,14 @@ def display_chat_history(chatbot):
 
 def main():
     logger.info("Running single mode")
+    
+    st.session_state.setdefault("language_manager", LanguageManager())
+    st.session_state.setdefault("api_manager", APIManager())
 
-    if api_key_manager := st.session_state.get("api_key_manager"):
-        api_key_manager.display()
+    with st.sidebar:
+        st.session_state.language_manager.display()
+        st.divider()
+        st.session_state.api_manager.display()
 
     st.session_state.setdefault("header_container", st.empty())
     st.session_state.setdefault(
@@ -57,7 +64,7 @@ def main():
             logger.info("Generating greetings")
             with st.spinner(f"{current_choice} is writing..."):
                 with st.chat_message("ai", avatar=chatbot.avatar):
-                    chatbot.greet()
+                    chatbot.greet(language=st.session_state.language)
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
@@ -68,7 +75,7 @@ def main():
         with st.spinner(f"{current_choice} is writing..."):
             logger.info("Generating response to user prompt")
             with st.chat_message("ai", avatar=chatbot.avatar):
-                chatbot.chat(prompt)
+                chatbot.chat(prompt, language=st.session_state.language)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 import streamlit as st
 
-from utils.api_manager import APIKeyManager
+from utils.api_manager import APIManager
+from utils.language_manager import LanguageManager
 from utils.logging import configure_logger
 from utils.logo import generate_logo
 
@@ -9,18 +10,16 @@ logger = configure_logger(__file__)
 st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 
-def initialize_api_key_manager():
-    if "api_key_manager" not in st.session_state:
-        st.session_state.clear()
-        st.session_state.api_key_manager = APIKeyManager()
-
-
-initialize_api_key_manager()
-
-
 def main():
     logger.info("Running home")
-    st.session_state.api_key_manager.display()
+
+    st.session_state.setdefault("language_manager", LanguageManager())
+    st.session_state.setdefault("api_manager", APIManager())
+
+    with st.sidebar:
+        st.session_state.language_manager.display()
+        st.sidebar.divider()
+        st.session_state.api_manager.display()
 
     col1, col2 = st.columns(spec=[1, 0.5], gap="large")
     with col1:

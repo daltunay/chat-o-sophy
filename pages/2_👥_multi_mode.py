@@ -3,6 +3,8 @@ import os
 import streamlit as st
 
 from chatbot import AssistantChatbot, PhilosopherChatbot
+from utils.api_manager import APIManager
+from utils.language_manager import LanguageManager
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -19,8 +21,13 @@ PHILOSOPHERS = [
 def main():
     logger.info("Running multi mode")
 
-    if api_key_manager := st.session_state.get("api_key_manager"):
-        api_key_manager.display()
+    st.session_state.setdefault("language_manager", LanguageManager())
+    st.session_state.setdefault("api_manager", APIManager())
+
+    with st.sidebar:
+        st.session_state.language_manager.display()
+        st.divider()
+        st.session_state.api_manager.display()
 
     with st.container():
         st.title("Multi mode", anchor=False)
@@ -48,7 +55,9 @@ def main():
             logger.info(f"Generating {philosopher}'s response")
             with st.chat_message("ai", avatar=chatbot.avatar):
                 with st.spinner(f"{philosopher} is writing..."):
-                    answer = chatbot.chat(prompt=prompt)
+                    answer = chatbot.chat(
+                        prompt=prompt, language=st.session_state.language
+                    )
                     history.append({"role": philosopher, "content": answer})
 
         st.header(
@@ -60,10 +69,10 @@ def main():
         logger.info("Instantiating AI assistant")
         assistant = AssistantChatbot(history)
         logger.info("Generating summary")
-        assistant.summarize_responses()
+        assistant.summarize_responses(language=st.session_state.language)
         with st.spinner("Generating summary table..."):
             logger.info("Generating summary table")
-            assistant.summary_table()
+            assistant.summary_table(language=st.session_state.language)
 
 
 if __name__ == "__main__":

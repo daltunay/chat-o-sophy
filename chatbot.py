@@ -1,12 +1,9 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-)
+from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
+                               MessagesPlaceholder,
+                               SystemMessagePromptTemplate)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.streaming import CallbackHandlers
@@ -38,14 +35,16 @@ class Chatbot:
                     "You are an assistant, of whom the purpose will be to summarize some philosophers' responses to a user question. "
                     "You will write a short synthesis on the question topic, opposing philosophers' views. "
                     "You will use markdown syntax and formatting, with numbered multi-level headings. "
-                    "The title will consist in the reformulated question."
+                    "The title will consist in the reformulated question. "
+                    "You will strictly only speak in {language}."
                 )
             elif self.bot_type == "philosopher":
                 system_message = (
                     "From now on, you are not an AI anymore. You are in fact the famous philosopher called {philosopher}. "
                     "You will have a discussion with a user, which needs your philosopher's perspective. Your purpose is to enlighten them. "
                     "Please chat with the user, impersonating {philosopher}. "
-                    "Always answer their questions, without asking anything yourself. Do not ask any questions."
+                    "Always answer their questions, without asking anything yourself. Do not ask any questions. "
+                    "You will strictly only speak in {language}."
                 )
 
             self._cached_template = ChatPromptTemplate.from_messages(
@@ -98,15 +97,17 @@ class PhilosopherChatbot(Chatbot):
         super().__init__(bot_type="philosopher", philosopher=philosopher)
         self.history = []
 
-    def greet(self):
+    def greet(self, language):
         return self.chat(
-            prompt="I am your guest. Please present yourself, and greet me."
+            prompt="I am your guest. Please present yourself, and greet me.",
+            language=language,
         )
 
-    def chat(self, prompt):
+    def chat(self, prompt, language):
         response = self.chain.run(
             input=prompt,
             philosopher=self.philosopher,
+            language=language,
             callbacks=self.callbacks,
         )
         self.update_history()
@@ -139,12 +140,15 @@ class AssistantChatbot(Chatbot):
         )
         return history_str
 
-    def summarize_responses(self):
-        return self.chain.run(input=self.history_str, callbacks=self.callbacks)
+    def summarize_responses(self, language):
+        return self.chain.run(
+            input=self.history_str, language=language, callbacks=self.callbacks
+        )
 
-    def summary_table(self):
+    def summary_table(self, language):
         return self.chain.run(
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
             "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
+            language=language,
             callbacks=self.callbacks,
         )

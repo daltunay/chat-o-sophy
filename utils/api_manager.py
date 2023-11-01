@@ -8,9 +8,8 @@ from utils.logging import configure_logger
 logger = configure_logger(__file__)
 
 
-class APIKeyManager:
+class APIManager:
     def __init__(self):
-        logger.info("Initializing API key manager")
         self.local_api_key = st.session_state.get(
             "local_api_key", st.secrets.openai_api.key
         )
@@ -18,34 +17,33 @@ class APIKeyManager:
         self.user_api_key = st.session_state.get("user_api_key", "")
 
     def display(self):
-        with st.sidebar:
-            st.title("OpenAI API Manager")
+        st.title("OpenAI API")
 
-            self.use_local_key = st.checkbox(
-                label="Default API key",
-                help="Use my own API key, if you don't have any.",
-                on_change=self.check_api_key,
-                value=st.session_state.get("use_local_key", False),
-                key="use_local_key",
-                kwargs={"type": "local"},
+        self.use_local_key = st.checkbox(
+            label="Default API key",
+            help="Use my own API key, if you don't have any.",
+            on_change=self.check_api_key,
+            value=st.session_state.get("use_local_key", False),
+            key="use_local_key",
+            kwargs={"type": "local"},
+        )
+
+        with st.form("api_form"):
+            self.user_api_key = st.text_input(
+                label="Enter your API key:",
+                value=self.user_api_key,
+                placeholder="sk-...",
+                type="password",
+                autocomplete="",
+                disabled=self.use_local_key,
             )
-
-            with st.form("api_form"):
-                self.user_api_key = st.text_input(
-                    label="Enter your API key:",
-                    value=self.user_api_key,
-                    placeholder="sk-...",
-                    type="password",
-                    autocomplete="",
-                    disabled=self.use_local_key,
-                )
-                st.form_submit_button(
-                    label="Submit",
-                    use_container_width=True,
-                    disabled=self.use_local_key,
-                    on_click=self.check_api_key,
-                    kwargs={"type": "human"},
-                )
+            st.form_submit_button(
+                label="Submit",
+                use_container_width=True,
+                disabled=self.use_local_key,
+                on_click=self.check_api_key,
+                kwargs={"type": "human"},
+            )
 
         if st.session_state.get("valid_api_key"):
             st.sidebar.success("Successfully authenticated", icon="🔐")
