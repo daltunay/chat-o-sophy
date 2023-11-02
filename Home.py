@@ -17,9 +17,9 @@ def main():
     st.session_state.setdefault("api_manager", APIManager())
 
     with st.sidebar:
-        st.session_state.language_manager.display()
+        st.session_state.language_manager.main()
         st.sidebar.divider()
-        st.session_state.api_manager.display()
+        st.session_state.api_manager.main()
 
     col1, col2 = st.columns(spec=[0.7, 0.3], gap="large")
     with col1:

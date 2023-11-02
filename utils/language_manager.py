@@ -15,7 +15,7 @@ class LanguageManager:
         ]
         self.selected_language = "English"
 
-    def display(self):
+    def main(self):
         st.title("Language")
 
         self.selected_language = st.selectbox(

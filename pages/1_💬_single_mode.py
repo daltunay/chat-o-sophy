@@ -34,9 +34,9 @@ def main():
     st.session_state.setdefault("api_manager", APIManager())
 
     with st.sidebar:
-        st.session_state.language_manager.display()
+        st.session_state.language_manager.main()
         st.divider()
-        st.session_state.api_manager.display()
+        st.session_state.api_manager.main()
 
     st.session_state.setdefault("header_container", st.empty())
     st.session_state.setdefault(

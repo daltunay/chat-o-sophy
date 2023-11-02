@@ -25,9 +25,9 @@ def main():
     st.session_state.setdefault("api_manager", APIManager())
 
     with st.sidebar:
-        st.session_state.language_manager.display()
+        st.session_state.language_manager.main()
         st.divider()
-        st.session_state.api_manager.display()
+        st.session_state.api_manager.main()
 
     with st.container():
         st.title("Multi mode", anchor=False)
