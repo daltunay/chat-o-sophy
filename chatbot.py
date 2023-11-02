@@ -1,18 +1,23 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
+from langchain.llms import Baseten
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.streaming import CallbackHandlers
 
 
 class Chatbot:
-    def __init__(self, bot_type, philosopher):
+    def __init__(self, bot_type, philosopher, provider="baseten"):
         self.bot_type = bot_type
         self.philosopher = philosopher
+        self.provider = provider
         self._cached_avatar = None
         self._cached_template = None
         self._cached_memory = None
@@ -74,10 +79,12 @@ class Chatbot:
     @property
     def llm(self):
         if self._cached_llm is None:
-            self._cached_llm = ChatOpenAI(
-                model_name="gpt-3.5-turbo",
-                streaming=True,
-            )
+            if self.provider == "openai":
+                self._cached_llm = ChatOpenAI(
+                    model_name="gpt-3.5-turbo", streaming=True
+                )
+            elif self.provider == "baseten":
+                self._cached_llm = Baseten(model="qelyr53")
         return self._cached_llm
 
     @property
