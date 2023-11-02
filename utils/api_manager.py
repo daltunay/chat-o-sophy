@@ -10,39 +10,36 @@ logger = configure_logger(__file__)
 
 class APIManager:
     def __init__(self):
-        self.local_api_key = st.session_state.get(
-            "local_api_key", st.secrets.openai_api.key
-        )
-        self.use_local_key = st.session_state.get("use_local_key", False)
-        self.user_api_key = st.session_state.get("user_api_key", "")
+        st.session_state.setdefault("use_local_api_key", False)
+        st.session_state.setdefault("user_api_key", "")
 
-    def display(self, home=False):
+    def display(self):
         st.title("OpenAI API")
 
-        self.use_local_key = st.checkbox(
+        st.checkbox(
             label="Default API key",
-            help="Use my own API key, if you don't have any.",
+            help="Use the provided default API key, if you don't have any.",
+            key="use_local_api_key",
+            value=st.session_state.use_local_api_key,
             on_change=self.check_api_key,
-            value=st.session_state.get("use_local_key", False),
-            key="use_local_key",
-            kwargs={"type": "local"},
         )
 
         with st.form("api_form"):
-            self.user_api_key = st.text_input(
+            st.text_input(
                 label="Enter your API key:",
-                value=self.user_api_key,
+                value=st.session_state.user_api_key,
                 placeholder="sk-...",
                 type="password",
                 autocomplete="",
-                disabled=self.use_local_key,
+                key="user_api_key",
+                disabled=st.session_state.use_local_api_key,
             )
+
             st.form_submit_button(
                 label="Submit",
                 use_container_width=True,
-                disabled=self.use_local_key,
+                disabled=st.session_state.use_local_api_key,
                 on_click=self.check_api_key,
-                kwargs={"type": "human"},
             )
 
         if st.session_state.get("valid_api_key"):
@@ -55,15 +52,14 @@ class APIManager:
                 icon="💡",
             )
 
-    def check_api_key(self, type: str):
+    def check_api_key(self):
         logger.info("Checking API key validity")
 
-        api_key = None
-
-        if type == "local" and st.session_state.get("use_local_key"):
-            api_key = self.local_api_key
-        elif type == "human":
-            api_key = self.user_api_key
+        api_key = (
+            st.secrets.openai_api.key
+            if st.session_state.use_local_api_key
+            else st.session_state.user_api_key
+        )
 
         try:
             openai.api_key = api_key
