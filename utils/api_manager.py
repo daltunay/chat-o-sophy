@@ -10,16 +10,17 @@ logger = configure_logger(__file__)
 
 class APIManager:
     def __init__(self):
+        self.initialize_session_state()
+
+    def initialize_session_state(self):
         st.session_state.setdefault("use_local_api_key", False)
         st.session_state.setdefault("user_api_key_baseten", "")
         st.session_state.setdefault("user_api_key_openai", "")
         st.session_state.setdefault("model_choice", "llama-2-7b-chat")
         st.session_state.setdefault("valid_api_key", False)
 
-    def display(self):
-        st.title("LLM API")
-
-        model_choice = st.selectbox(
+    def model_choice_selection(self):
+        st.selectbox(
             label="Select the model:",
             options=("llama-2-7b-chat", "gpt3.5-turbo"),
             index=("llama-2-7b-chat", "gpt3.5-turbo").index(
@@ -29,6 +30,7 @@ class APIManager:
             on_change=self.check_openai_api_key,
         )
 
+    def default_api_selection(self):
         st.checkbox(
             label="Default API key",
             help="Use the provided default API key, if you don't have any.",
@@ -37,15 +39,24 @@ class APIManager:
             on_change=self.check_openai_api_key,
         )
 
-        if model_choice == "llama-2-7b-chat":
+    def show_authentification_status(self):
+        if st.session_state.valid_api_key:
+            st.sidebar.success("Successfully authenticated", icon="🔐")
+        else:
+            st.sidebar.info("Add your API key to continue", icon="🔑")
+
+    def display(self):
+        st.title("LLM API")
+
+        self.model_choice_selection()
+        self.default_api_selection()
+
+        if st.session_state.model_choice == "llama-2-7b-chat":
             self.display_baseten_api_key()
         else:
             self.display_openai_api_key()
 
-        if st.session_state.valid_api_key:
-            st.sidebar.success("Successfully authenticated", icon="🔐")
-        else:
-            st.sidebar.error("Add your API key to continue", icon="🔑")
+        self.show_authentification_status()
 
     def display_baseten_api_key(self):
         with st.form("baseten_api"):
