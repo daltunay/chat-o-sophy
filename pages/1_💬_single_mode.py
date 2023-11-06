@@ -27,11 +27,24 @@ def display_chat_history(chatbot):
             st.chat_message(role, avatar=avatar).write(content)
 
 
+@st.cache_resource(max_entries=1)
+def initialize_chatbots(provider, model_choice):
+    logger.info(f"Initializing chatbots with {provider=}")
+    st.session_state.chatbots = {
+        philosopher: PhilosopherChatbot(philosopher, provider=provider)
+        for philosopher in PHILOSOPHERS
+    }
+
+
 def main():
     logger.info("Running single mode")
 
     st.session_state.setdefault("language_manager", LanguageManager())
     st.session_state.setdefault("api_manager", APIManager())
+
+    initialize_chatbots(
+        st.session_state.api_manager.provider, st.session_state.model_choice
+    )
 
     with st.sidebar:
         st.session_state.language_manager.main()
@@ -39,10 +52,6 @@ def main():
         st.session_state.api_manager.main()
 
     st.session_state.setdefault("header_container", st.empty())
-    st.session_state.setdefault(
-        "chatbots",
-        {philosopher: PhilosopherChatbot(philosopher) for philosopher in PHILOSOPHERS},
-    )
 
     with st.session_state["header_container"].container():
         st.title("Single mode", anchor=False)
@@ -53,14 +62,17 @@ def main():
             placeholder="Choose one philosopher",
             options=PHILOSOPHERS,
             index=None,
-            disabled=not os.getenv("OPENAI_API_KEY"),
+            disabled=not st.session_state.api_manager.valid_api_key,
         )
 
-    if not os.getenv("OPENAI_API_KEY"):
+    if not st.session_state.api_manager.valid_api_key:
         st.error(
             "Please configure your OpenAI API key in left sidebar to unlock selection",
             icon="🔒",
         )
+
+    if not st.session_state.api_manager.valid_api_key:
+        return
 
     if current_choice:
         chatbot = st.session_state.chatbots[current_choice]
@@ -70,18 +82,18 @@ def main():
             logger.info("Generating greetings")
             with st.spinner(f"{current_choice} is writing..."):
                 with st.chat_message("ai", avatar=chatbot.avatar):
-                    chatbot.greet(language=st.session_state.language)
+                    st.write(chatbot.greet(language=st.session_state.language))
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (current_choice and os.getenv("OPENAI_API_KEY")),
+        disabled=not (current_choice and st.session_state.api_manager.valid_api_key),
     ):
         logger.info("User prompt submitted")
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
             logger.info("Generating response to user prompt")
             with st.chat_message("ai", avatar=chatbot.avatar):
-                chatbot.chat(prompt, language=st.session_state.language)
+                st.write(chatbot.chat(prompt, language=st.session_state.language))
 
 
 if __name__ == "__main__":

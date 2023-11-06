@@ -39,10 +39,10 @@ def main():
             options=PHILOSOPHERS,
             max_selections=5,
             default=None,
-            disabled=not os.getenv("OPENAI_API_KEY"),
+            disabled=not st.session_state.api_manager.valid_api_key,
         )
 
-    if not os.getenv("OPENAI_API_KEY"):
+    if not st.session_state.api_manager.valid_api_key:
         st.error(
             "Please configure your OpenAI API key in left sidebar to unlock selection",
             icon="🔒",
@@ -50,14 +50,14 @@ def main():
 
     if prompt := st.chat_input(
         placeholder="What is your question?",
-        disabled=not (current_choices and os.getenv("OPENAI_API_KEY")),
+        disabled=not (current_choices and st.session_state.api_manager.valid_api_key),
     ):
         logger.info("User prompt submitted")
         st.chat_message("human").write(prompt)
         history = [{"role": "human", "content": prompt}]
         for philosopher in current_choices:
             st.header(philosopher, divider="gray", anchor=False)
-            chatbot = PhilosopherChatbot(philosopher)
+            chatbot = PhilosopherChatbot(philosopher, provider=st.session_state.api_manager.provider)
             logger.info(f"Generating {philosopher}'s response")
             with st.chat_message("ai", avatar=chatbot.avatar):
                 with st.spinner(f"{philosopher} is writing..."):
@@ -73,7 +73,7 @@ def main():
             divider="gray",
         )
         logger.info("Instantiating AI assistant")
-        assistant = AssistantChatbot(history)
+        assistant = AssistantChatbot(history, provider=st.session_state.api_manager.provider)
         logger.info("Generating summary")
         assistant.summarize_responses(language=st.session_state.language)
         with st.spinner("Generating summary table..."):

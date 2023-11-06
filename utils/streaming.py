@@ -6,15 +6,14 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 class StreamingChatCallbackHandler(BaseCallbackHandler):
     def __init__(self):
         self.container = st.empty()
-        self.response = ""
+        self.text = ""
 
-    def on_llm_new_token(self, token: str, **kwargs):
-        self.response += token
-        self.container.markdown(self.response, unsafe_allow_html=True)
+    def on_llm_new_token(self, token, *args, **kwargs):
+        self.text += token
+        self.container.markdown(self.text, unsafe_allow_html=True)
 
     def on_llm_end(self, *args, **kwargs):
-        # self.container.empty()
-        pass
+        self.container.empty()
 
 
 class BusyCallbackHandler(BaseCallbackHandler):  # TODO: implement in pages

@@ -1,3 +1,6 @@
+import os
+
+import baseten
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import Baseten
@@ -14,7 +17,7 @@ from utils.streaming import CallbackHandlers
 
 
 class Chatbot:
-    def __init__(self, bot_type, philosopher, provider="baseten"):
+    def __init__(self, bot_type, philosopher, provider):
         self.bot_type = bot_type
         self.philosopher = philosopher
         self.provider = provider
@@ -56,7 +59,9 @@ class Chatbot:
                 [
                     SystemMessagePromptTemplate.from_template(system_message),
                     MessagesPlaceholder(variable_name="history"),
-                    HumanMessagePromptTemplate.from_template("{input}"),
+                    HumanMessagePromptTemplate.from_template(
+                        "{input}" + "\nAnswer me in {language}."
+                    ),
                 ]
             )
         return self._cached_template
@@ -84,7 +89,8 @@ class Chatbot:
                     model_name="gpt-3.5-turbo", streaming=True
                 )
             elif self.provider == "baseten":
-                self._cached_llm = Baseten(model="qelyr53")
+                baseten.login(os.environ["BASETEN_API_KEY"])
+                self._cached_llm = Baseten(model=os.environ["BASETEN_DEPLOYMENT_ID"])
         return self._cached_llm
 
     @property
@@ -100,8 +106,10 @@ class Chatbot:
 
 
 class PhilosopherChatbot(Chatbot):
-    def __init__(self, philosopher):
-        super().__init__(bot_type="philosopher", philosopher=philosopher)
+    def __init__(self, philosopher, provider):
+        super().__init__(
+            bot_type="philosopher", provider=provider, philosopher=philosopher
+        )
         self.history = []
 
     def greet(self, language):
@@ -130,8 +138,8 @@ class PhilosopherChatbot(Chatbot):
 
 
 class AssistantChatbot(Chatbot):
-    def __init__(self, history):
-        super().__init__(philosopher=None, bot_type="assistant")
+    def __init__(self, history, provider):
+        super().__init__(philosopher=None, provider=provider, bot_type="assistant")
         self.history = history
 
     @property
