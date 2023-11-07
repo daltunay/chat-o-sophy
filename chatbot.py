@@ -1,9 +1,8 @@
 import os
 
-import baseten
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.llms import Baseten
+from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import (
     ChatPromptTemplate,
@@ -88,9 +87,8 @@ class Chatbot:
                 self._cached_llm = ChatOpenAI(
                     model_name="gpt-3.5-turbo", streaming=True
                 )
-            elif self.provider == "baseten":
-                baseten.login(os.environ["BASETEN_API_KEY"])
-                self._cached_llm = Baseten(model=os.environ["BASETEN_DEPLOYMENT_ID"])
+            elif self.provider == "replicate":
+                pass
         return self._cached_llm
 
     @property

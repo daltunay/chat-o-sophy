@@ -1,160 +1,122 @@
 import os
+
+import requests
 import streamlit as st
+
+AVAILABLE_MODELS = {
+    "gpt-3.5-turbo": {"provider": "openai", "model_owner": None},
+    "mistral-7b-instruct-v0.1": {"provider": "replicate", "model_owner": "mistralai"},
+    "llama-2-7b-chat": {"provider": "replicate", "model_owner": "meta"},
+}
 
 
 class APIManager:
-    def __init__(self):
+    def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
+        self.provider = default_provider
+        self.chosen_model = default_model
+        self.available_models = AVAILABLE_MODELS
         self.api_keys = {
-            "baseten": {"key": "", "env_var_api_key": "BASETEN_API_KEY", "env_var_deployment_id": "BASETEN_DEPLOYMENT_ID"},
-            "openai": {"key": "", "env_var_api_key": "OPENAI_API_KEY"},
-        }
-        self.provider = None
-        self.model_choices = {
-            "llama-2-7b-chat": self.baseten_api_form,
-            "mistral-7b-instruct-model": self.baseten_api_form,
-            "gpt3.5-turbo": self.openai_api_form,
-        }
-        self.valid_api_key = False
-
-    def set_session_state(self):
-        st.session_state.setdefault("use_local_api_key", False)
-        st.session_state.setdefault("user_api_key_openai", "")
-        st.session_state.setdefault("user_api_key_baseten", "")
-        st.session_state.setdefault("user_deployment_id_baseten", "")
-        st.session_state.setdefault("model_choice", "llama-2-7b-chat")
-
-    def model_choice_selection(self):
-        st.selectbox(
-            label="Select the model:",
-            options=("llama-2-7b-chat", "mistral-7b-instruct-model", "gpt3.5-turbo"),
-            index=(
-                "llama-2-7b-chat",
-                "mistral-7b-instruct-model",
-                "gpt3.5-turbo",
-            ).index(st.session_state.model_choice),
-            key="model_choice",
-            on_change=self.check_api_key,
-        )
-
-    def default_api_checkbox(self):
-        st.checkbox(
-            label="Default API key",
-            help="Use the provided default API key, if you don't have any.",
-            key="use_local_api_key",
-            value=st.session_state.use_local_api_key,
-            on_change=self.check_api_key,
-        )
-
-    def baseten_api_form(self):
-        self.api_form(
-            "baseten",
-            "Enter your Baseten API key:",
-            "user_api_key_baseten",
-            "user_deployment_id_baseten",
-        )
-
-    def openai_api_form(self):
-        self.api_form("openai", "Enter your OpenAI API key:", "user_api_key_openai")
-
-    def api_form(self, provider, label, user_key, user_deployment_key=None):
-        with st.form(f"{provider}_api"):
-            st.text_input(
-                label=label,
-                value=st.session_state[user_key],
-                placeholder="...",
-                type="password",
-                autocomplete="",
-                key=user_key,
-                disabled=st.session_state.use_local_api_key,
+            provider: {"api_key": "", "use_default": True}
+            for provider in set(
+                model_info["provider"] for model_info in AVAILABLE_MODELS.values()
             )
-            if provider == "baseten":
-                st.text_input(
-                    label="Deployment ID",
-                    value=st.session_state[user_deployment_key],
-                    placeholder="...",
-                    key=user_deployment_key,
-                    disabled=st.session_state.use_local_api_key,
-                )
+        }
+
+    def choose_model(self):
+        self.chosen_model = st.selectbox(
+            label="Select the model:",
+            options=self.available_models.keys(),
+            index=list(self.available_models.keys()).index(self.chosen_model),
+        )
+
+        self.provider = self.available_models[self.chosen_model]["provider"]
+        self.model_owner = self.available_models[self.chosen_model]["model_owner"]
+
+    def default_api_key(self):
+        self.api_keys[self.provider]["use_default"] = st.checkbox(
+            label="Default API key",
+            value=self.api_keys[self.provider]["use_default"],
+            help="Use the provided default API key, if you don't have any.",
+        )
+
+        if self.api_keys[self.provider]["use_default"]:
+            self.authenticate(
+                api_key=st.secrets.get(f"{self.provider}_api").key,
+                provider=self.provider,
+                model_name=self.chosen_model,
+                model_owner=self.model_owner,
+            )
+
+    def api_key_form(self):
+        with st.form(self.provider):
+            if self.provider == "openai":
+                provider_label = "OpenAI API key:"
+                provider_help = "https://platform.openai.com/account/api-keys"
+            elif self.provider == "replicate":
+                provider_label = "Replicate API key:"
+                provider_help = "https://replicate.com/account/api-tokens"
+
+            self.api_keys[self.provider]["api_key"] = st.text_input(
+                label=provider_label,
+                value=self.api_keys[self.provider]["api_key"],
+                type="password",
+                help=provider_help,
+                autocomplete="",
+                disabled=not self.chosen_model
+                or self.api_keys[self.provider]["use_default"],
+            )
+
+            api_key = (
+                st.secrets.get(f"{self.provider}_api").key
+                if self.api_keys[self.provider]["use_default"]
+                else self.api_keys[self.provider]["api_key"]
+            )
+
             st.form_submit_button(
                 label="Submit",
+                on_click=self.authenticate,
+                kwargs={
+                    "api_key": api_key,
+                    "provider": self.provider,
+                    "model_name": self.chosen_model,
+                    "model_owner": self.model_owner,
+                },
+                disabled=not self.chosen_model
+                or self.api_keys[self.provider]["use_default"],
                 use_container_width=True,
-                disabled=st.session_state.use_local_api_key,
-                on_click=lambda: self.check_api_key(provider),
             )
 
-    def check_api_key(self, provider=None):
-        if provider is None:
-            provider = {
-                "llama-2-7b-chat": "baseten",
-                "mistral-7b-instruct-model": "baseten",
-                "gpt3.5-turbo": "openai",
-            }[st.session_state.model_choice]
-        api_key = (
-            st.secrets[f"{provider}_api"].key
-            if st.session_state.use_local_api_key
-            else st.session_state.get(f"user_api_key_{provider}")
-        )
+    def authenticate(self, api_key, provider, model_name, model_owner):
+        if provider == "openai":
+            success = self.authenticate_openai(api_key, model_name)
+        elif provider == "replicate":
+            success = self.authenticate_replicate(api_key, model_owner, model_name)
 
-        deployment_id = (
-            st.secrets[f"{provider}_api"].deployment_id
-            if st.session_state.use_local_api_key
-            else st.session_state.get(f"user_deployment_id_{provider}")
-        )
-
-        self.authenticate(provider, api_key, deployment_id)
-
-    def authenticate(self, provider, key, deployment_id):
-        try:
-            if provider == "openai":
-                self.authenticate_openai(key)
-            elif provider == "baseten":
-                self.authenticate_baseten(key, deployment_id)
+        if success:
             self.provider = provider
-            self.store_api_key(provider, key)
-            self.store_deployment_id(provider, deployment_id)
+            os.environ[f"{provider.upper()}_API_KEY"] = api_key
             st.toast(f"API Authentication successful — {provider}", icon="✅")
-
-        except Exception as e:
+        else:
             self.provider = None
-            self.delete_api_key(provider)
+            os.environ.pop(f"{provider.upper()}_API_KEY", None)
             st.toast(f"API Authentication error — {provider}", icon="🚫")
 
-    def authenticate_openai(self, key):
-        import openai
-
-        openai.api_key = key
-        openai.Model.list()
-
-    def authenticate_baseten(self, key, deployment_id):
-        import requests
-
-        response = requests.post(
-            url=f"https://app.baseten.co/model_versions/{deployment_id}/wake",
-            headers={"Authorization": f"Api-Key {key}"},
+    def authenticate_openai(self, api_key, model_name):
+        response = requests.get(
+            url=f"https://api.openai.com/v1/models/{model_name}",
+            headers={"Authorization": f"Bearer {api_key}"},
         )
-        if not response.ok:
-            raise Exception
+        return response.ok
 
-    def store_api_key(self, provider, key):
-        os.environ[self.api_keys[provider]["env_var_api_key"]] = key
-        self.valid_api_key = True
-
-    def store_deployment_id(self, provider, deployment_id):
-        os.environ[self.api_keys[provider]["env_var_deployment_id"]] = deployment_id
-        self.valid_deployment_id = True
-
-    def delete_api_key(self, provider):
-        os.environ.pop(self.api_keys[provider]["env_var_api_key"], None)
-        self.valid_api_key = False
+    def authenticate_replicate(self, api_key, model_owner, model_name):
+        response = requests.get(
+            url=f"https://api.replicate.com/v1/models/{model_owner}/{model_name}",
+            headers={"Authorization": f"Token {api_key}"},
+        )
+        return response.ok
 
     def main(self):
         st.title("LLM API")
-        self.set_session_state()
-        self.model_choice_selection()
-        self.default_api_checkbox()
-        self.model_choices[st.session_state.model_choice]()
-
-
-if __name__ == "__main__":
-    manager = APIManager()
-    manager.main()
+        self.choose_model()
+        self.default_api_key()
+        self.api_key_form()
