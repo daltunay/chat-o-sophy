@@ -17,9 +17,9 @@ class APIManager:
         self.available_models = AVAILABLE_MODELS
         self.api_keys = {
             provider: {"api_key": "", "use_default": True}
-            for provider in set(
+            for provider in {
                 model_info["provider"] for model_info in AVAILABLE_MODELS.values()
-            )
+            }
         }
 
     def choose_model(self):
@@ -73,7 +73,7 @@ class APIManager:
             )
 
             st.form_submit_button(
-                label="Submit",
+                label="Authentificate",
                 on_click=self.authenticate,
                 kwargs={
                     "api_key": api_key,
