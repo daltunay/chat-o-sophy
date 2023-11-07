@@ -11,9 +11,6 @@ streamlit = "^1.27.2"
 watchdog = "^3.0.0"
 langchain = "^0.0.323"
 openai = "^0.28.1"
-urllib3 = "1.26.15"
-requests-toolbelt = ">=0.9.1,<0.10.0"
-baseten = "^0.8.1"
 replicate = "^0.15.5"
 
 [tool.poetry.group.dev.dependencies]
