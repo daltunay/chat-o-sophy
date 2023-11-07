@@ -1,9 +1,8 @@
 import streamlit as st
 
-from utils.api_manager import APIManager
-from utils.language_manager import LanguageManager
 from utils.logging import configure_logger
 from utils.logo import generate_logo
+from sidebar import show_sidebar
 
 logger = configure_logger(__file__)
 
@@ -13,13 +12,7 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 def main():
     logger.info("Running home")
 
-    st.session_state.setdefault("language_manager", LanguageManager())
-    st.session_state.setdefault("api_manager", APIManager())
-
-    with st.sidebar:
-        st.session_state.language_manager.main()
-        st.sidebar.divider()
-        st.session_state.api_manager.main()
+    show_sidebar()
 
     col1, col2 = st.columns(spec=[0.7, 0.3], gap="large")
     with col1:

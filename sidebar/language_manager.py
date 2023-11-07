@@ -33,5 +33,5 @@ class LanguageManager:
         )
 
     def main(self):
-        st.title("Chat Language")
+        st.header("Chat Language", divider="gray")
         self.choose_language()

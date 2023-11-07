@@ -4,9 +4,8 @@ import os
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
-from utils.api_manager import APIManager
-from utils.language_manager import LanguageManager
 from utils.logging import configure_logger
+from sidebar import show_sidebar
 
 logger = configure_logger(__file__)
 
@@ -28,8 +27,9 @@ def display_chat_history(chatbot):
 
 
 @st.cache_resource(max_entries=1)
-def initialize_chatbots(provider, model_choice):
-    logger.info(f"Initializing chatbots with {provider=}")
+def initialize_chatbots(model, language):
+    logger.info(f"Initializing chatbots with {model=}, language={language}")
+    provider = st.session_state.api_manager.provider
     st.session_state.chatbots = {
         philosopher: PhilosopherChatbot(philosopher, provider=provider)
         for philosopher in PHILOSOPHERS
@@ -39,40 +39,24 @@ def initialize_chatbots(provider, model_choice):
 def main():
     logger.info("Running single mode")
 
-    st.session_state.setdefault("language_manager", LanguageManager())
-    st.session_state.setdefault("api_manager", APIManager())
+    st.title("Single mode", anchor=False)
+    st.caption("Chat with the philosopher of your choice!")
 
-    initialize_chatbots(
-        st.session_state.api_manager.provider, st.session_state.model_choice
+    show_sidebar()
+
+    authentificated = st.session_state.api_manager.authentificated
+    chosen_model = st.session_state.api_manager.chosen_model
+    selected_language = st.session_state.language_manager.selected_language
+
+    initialize_chatbots(model=chosen_model, language=selected_language)
+
+    current_choice = st.selectbox(
+        label="Philosopher:",
+        placeholder="Choose one philosopher",
+        options=PHILOSOPHERS,
+        index=None,
+        disabled=not authentificated,
     )
-
-    with st.sidebar:
-        st.session_state.language_manager.main()
-        st.divider()
-        st.session_state.api_manager.main()
-
-    st.session_state.setdefault("header_container", st.empty())
-
-    with st.session_state["header_container"].container():
-        st.title("Single mode", anchor=False)
-        st.caption("Chat with the philosopher of your choice!")
-
-        current_choice = st.selectbox(
-            label="Philosopher:",
-            placeholder="Choose one philosopher",
-            options=PHILOSOPHERS,
-            index=None,
-            disabled=not st.session_state.api_manager.valid_api_key,
-        )
-
-    if not st.session_state.api_manager.valid_api_key:
-        st.error(
-            "Please configure your OpenAI API key in left sidebar to unlock selection",
-            icon="🔒",
-        )
-
-    if not st.session_state.api_manager.valid_api_key:
-        return
 
     if current_choice:
         chatbot = st.session_state.chatbots[current_choice]
@@ -82,18 +66,26 @@ def main():
             logger.info("Generating greetings")
             with st.spinner(f"{current_choice} is writing..."):
                 with st.chat_message("ai", avatar=chatbot.avatar):
-                    st.write(chatbot.greet(language=st.session_state.language))
+                    greetings = chatbot.greet(language=selected_language)
+                    st.write(greetings)
+    elif authentificated:
+        st.info("Select a philosopher in the above menu", icon="ℹ️")
+    else:
+        st.error(
+            "Please configure the model API in left sidebar to unlock selection",
+            icon="🔒",
+        )
 
     if prompt := st.chat_input(
         placeholder="What do you want to know?",
-        disabled=not (current_choice and st.session_state.api_manager.valid_api_key),
+        disabled=not (current_choice and authentificated),
     ):
         logger.info("User prompt submitted")
         st.chat_message("human").write(prompt)
         with st.spinner(f"{current_choice} is writing..."):
             logger.info("Generating response to user prompt")
             with st.chat_message("ai", avatar=chatbot.avatar):
-                st.write(chatbot.chat(prompt, language=st.session_state.language))
+                st.write(chatbot.chat(prompt, language=selected_language))
 
 
 if __name__ == "__main__":

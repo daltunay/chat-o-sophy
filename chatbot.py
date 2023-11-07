@@ -4,12 +4,9 @@ from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-)
+from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
+                               MessagesPlaceholder,
+                               SystemMessagePromptTemplate)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.streaming import CallbackHandlers
@@ -58,8 +55,9 @@ class Chatbot:
                 [
                     SystemMessagePromptTemplate.from_template(system_message),
                     MessagesPlaceholder(variable_name="history"),
-                    HumanMessagePromptTemplate.from_template(
-                        "{input}" + "\nAnswer me in {language}."
+                    HumanMessagePromptTemplate.from_template("{input}"),
+                    SystemMessagePromptTemplate.from_template(
+                        "Your answer in {language}:"
                     ),
                 ]
             )

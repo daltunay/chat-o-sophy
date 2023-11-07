@@ -3,8 +3,8 @@ import os
 import streamlit as st
 
 from chatbot import AssistantChatbot, PhilosopherChatbot
-from utils.api_manager import APIManager
-from utils.language_manager import LanguageManager
+from sidebar.api_manager import APIManager
+from sidebar.language_manager import LanguageManager
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)

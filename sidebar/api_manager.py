@@ -13,6 +13,8 @@ AVAILABLE_MODELS = {
     "llama-2-7b-chat": {"provider": "replicate", "model_owner": "meta"},
 }
 
+PROVIDER_FORMATS = {"openai": "OpenAI", "replicate": "Replicate"}
+
 API_KEYS = {
     provider: {"api_key": "", "use_default": True}
     for provider in {model_info["provider"] for model_info in AVAILABLE_MODELS.values()}
@@ -23,8 +25,10 @@ class APIManager:
     def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
         self.provider = default_provider
         self.chosen_model = default_model
+        self.provider_formats = PROVIDER_FORMATS
         self.available_models = AVAILABLE_MODELS
         self.api_keys = API_KEYS
+        self.authentificated = False
 
     def choose_model(self):
         self.chosen_model = st.selectbox(
@@ -54,24 +58,26 @@ class APIManager:
         )
 
         if self.api_keys[self.provider]["use_default"]:
-            self.authenticate(
-                api_key=st.secrets.get(f"{self.provider}_api").key,
-                provider=self.provider,
-                model_name=self.chosen_model,
-                model_owner=self.model_owner,
-            )
+            api_key = st.secrets.get(f"{self.provider}_api").key
+        else:
+            api_key = self.api_keys[self.provider]["api_key"]
+
+        self.authenticate(
+            api_key=api_key,
+            provider=self.provider,
+            model_name=self.chosen_model,
+            model_owner=self.model_owner,
+        )
 
     def api_key_form(self):
         with st.form(self.provider):
             if self.provider == "openai":
-                provider_label = "Enter your OpenAI API key:"
                 provider_help = "Click [here](https://platform.openai.com/account/api-keys) to get your OpenAI API key"
             elif self.provider == "replicate":
-                provider_label = "Enter your Replicate API key:"
                 provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
-                label=provider_label,
+                label=f"Enter your {self.provider_formats[self.provider]} API key:",
                 value=self.api_keys[self.provider]["api_key"],
                 placeholder="[default]"
                 if self.api_keys[self.provider]["use_default"]
@@ -111,18 +117,24 @@ class APIManager:
 
         if success:
             logger.info("Authentification successful")
-            st.toast(f"API Authentication successful — {provider}", icon="✅")
-            self.provider = provider
+            st.toast(
+                f"API Authentication successful — {self.provider_formats[self.provider]}",
+                icon="✅",
+            )
             os.environ[f"{provider.upper()}_API_KEY"] = api_key
+            self.authentificated = True
         else:
             logger.info("Authentification failed")
-            st.toast(f"API Authentication failed — {provider}", icon="🚫")
-            self.provider = None
+            st.toast(
+                f"API Authentication failed — {self.provider_formats[self.provider]}",
+                icon="🚫",
+            )
             os.environ.pop(f"{provider.upper()}_API_KEY", None)
+            self.authentificated = False
 
     @classmethod
     @st.cache_data(max_entries=1)
-    def authenticate_openai(self, api_key, model_name):
+    def authenticate_openai(cls, api_key, model_name):
         logger.info(msg="Requesting OpenAI API")
         response = requests.get(
             url=f"https://api.openai.com/v1/models/{model_name}",
@@ -132,7 +144,7 @@ class APIManager:
 
     @classmethod
     @st.cache_data(max_entries=1)
-    def authenticate_replicate(self, api_key, model_owner, model_name):
+    def authenticate_replicate(cls, api_key, model_owner, model_name):
         logger.info(msg="Requesting Replicate API")
         response = requests.get(
             url=f"https://api.replicate.com/v1/models/{model_owner}/{model_name}",
@@ -140,8 +152,21 @@ class APIManager:
         )
         return response.ok
 
+    def show_status(self):
+        if self.authentificated:
+            st.success(
+                f"Successfully authenticated to {self.provider_formats[self.provider]} API",
+                icon="🔐",
+            )
+        else:
+            st.info(
+                f"Please configure the {self.provider_formats[self.provider]} API above",
+                icon="🔐",
+            )
+
     def main(self):
-        st.title("Model Selection")
+        st.header("Model Selection", divider="gray")
         self.choose_model()
         self.default_api_key()
         self.api_key_form()
+        self.show_status()
