@@ -3,6 +3,10 @@ import os
 import requests
 import streamlit as st
 
+from utils.logging import configure_logger
+
+logger = configure_logger(__file__)
+
 AVAILABLE_MODELS = {
     "gpt-3.5-turbo": {"provider": "openai", "model_owner": None},
     "mistral-7b-instruct-v0.1": {"provider": "replicate", "model_owner": "mistralai"},
@@ -30,6 +34,8 @@ class APIManager:
             index=list(self.available_models.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
+            on_change=logger.info,
+            kwargs={"msg": "Switching model"},
         )
 
         self.provider = self.available_models[self.chosen_model]["provider"]
@@ -42,7 +48,9 @@ class APIManager:
             value=st.session_state.get(
                 "api_manager.use_default", self.api_keys[self.provider]["use_default"]
             ),
-            help="Use the provided default API key, if you don't have any.",
+            help="Use the provided default API key, if you don't have any",
+            on_change=logger.info,
+            kwargs={"msg": "Switching default API usage"},
         )
 
         if self.api_keys[self.provider]["use_default"]:
@@ -57,10 +65,10 @@ class APIManager:
         with st.form(self.provider):
             if self.provider == "openai":
                 provider_label = "Enter your OpenAI API key:"
-                provider_help = "https://platform.openai.com/account/api-keys"
+                provider_help = "Click [here](https://platform.openai.com/account/api-keys) to get your OpenAI API key"
             elif self.provider == "replicate":
                 provider_label = "Enter your Replicate API key:"
-                provider_help = "https://replicate.com/account/api-tokens"
+                provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
                 label=provider_label,
@@ -102,22 +110,30 @@ class APIManager:
             success = self.authenticate_replicate(api_key, model_owner, model_name)
 
         if success:
+            logger.info("Authentification successful")
+            st.toast(f"API Authentication successful — {provider}", icon="✅")
             self.provider = provider
             os.environ[f"{provider.upper()}_API_KEY"] = api_key
-            st.toast(f"API Authentication successful — {provider}", icon="✅")
         else:
+            logger.info("Authentification failed")
+            st.toast(f"API Authentication failed — {provider}", icon="🚫")
             self.provider = None
             os.environ.pop(f"{provider.upper()}_API_KEY", None)
-            st.toast(f"API Authentication error — {provider}", icon="🚫")
 
+    @classmethod
+    @st.cache_data(max_entries=1)
     def authenticate_openai(self, api_key, model_name):
+        logger.info(msg="Requesting OpenAI API")
         response = requests.get(
             url=f"https://api.openai.com/v1/models/{model_name}",
             headers={"Authorization": f"Bearer {api_key}"},
         )
         return response.ok
 
+    @classmethod
+    @st.cache_data(max_entries=1)
     def authenticate_replicate(self, api_key, model_owner, model_name):
+        logger.info(msg="Requesting Replicate API")
         response = requests.get(
             url=f"https://api.replicate.com/v1/models/{model_owner}/{model_name}",
             headers={"Authorization": f"Token {api_key}"},
@@ -125,7 +141,7 @@ class APIManager:
         return response.ok
 
     def main(self):
-        st.title("Large Language Model - API")
+        st.title("Model Selection")
         self.choose_model()
         self.default_api_key()
         self.api_key_form()
