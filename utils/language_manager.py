@@ -4,26 +4,34 @@ from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
+LANGUAGES = [
+    "English",
+    "French",
+    "German",
+    "Spanish",
+]
+
 
 class LanguageManager:
-    def __init__(self):
-        self.languages = [
-            "English",
-            "Spanish",
-            "French",
-            "German",
-        ]
-        self.selected_language = "English"
+    def __init__(self, default_language="English"):
+        self.languages = LANGUAGES
+        self.selected_language = default_language
 
-    def main(self):
-        st.title("Language")
-
+    def choose_language(self):
         self.selected_language = st.selectbox(
             label="Select chat language:",
             options=list(self.languages),
-            index=list(self.languages).index(self.selected_language),
+            key="language_manager.selected_language",
+            index=list(self.languages).index(
+                st.session_state.get(
+                    "language_manager.selected_language", self.selected_language
+                )
+            ),
+            help="Non English languages may only work with `gpt-3.5-turbo`",
             on_change=logger.info,
-            args=("Switching languages",),
+            kwargs={"msg": "Switching languages"},
         )
 
-        st.session_state.language = self.selected_language
+    def main(self):
+        st.title("Chat Language")
+        self.choose_language()
