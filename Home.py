@@ -62,17 +62,25 @@ def main():
     st.header("About", anchor=False, divider="gray")
     st.markdown(
         """
-        _chat-o-sophy_ harnesses the power of Large Language Models (LLM) to allow you to chat with your favorite philosophers.  
-        Using the OpenAI API, this app employs GPT-3.5 via the `langchain` library, as well as DALL·E 2 for the logo generation.
+        The app _chat-o-sophy_ harnesses the power of Large Language Models (LLM) to allow you to chat with your favorite philosophers.
+        - Available open source models: [Llama-2 7B](https://ai.meta.com/llama/), [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/) (via [Replicate](https://replicate.com/))  
+        - Available closed source models: [GPT-3.5](https://platform.openai.com/docs/models/gpt-3-5) (via [OpenAI](https://platform.openai.com/))
+        
+        Main technical stack: [Python](https://www.python.org/), [LangChain](https://www.langchain.com/), [Streamlit](https://streamlit.io/)
         """
     )
 
     st.divider()
 
-    st.columns([1, 0.5, 1])[1].markdown(
-        "_Made by Daniel Altunay_"
-        "[![LinkedIn](https://img.icons8.com/?id=13930&format=png)](https://linkedin.com/in/daltunay)"
-        "[![GitHub](https://img.icons8.com/?id=AZOZNnY73haj&format=png)](https://github.com/daltunay)"
+    st.markdown(
+        """
+    <div style="text-align: center;">
+        Made by Daniel Altunay<br>
+        <a href="https://linkedin.com/in/daltunay"><img src="https://img.icons8.com/?id=13930&format=png"></a>
+        <a href="https://github.com/daltunay"><img src="https://img.icons8.com/?id=AZOZNnY73haj&format=png"></a>
+    </div>
+    """,
+        unsafe_allow_html=True,
     )
 
     # with col2:
