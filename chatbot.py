@@ -4,19 +4,27 @@ from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.streaming import CallbackHandlers
 
 
 class Chatbot:
-    def __init__(self, bot_type, philosopher, provider):
+    def __init__(
+        self, bot_type, philosopher, provider, model_name, model_owner, model_version
+    ):
         self.bot_type = bot_type
         self.philosopher = philosopher
         self.provider = provider
+        self.model_name = model_name
+        self.model_owner = model_owner
+        self.model_version = model_version
         self._cached_avatar = None
         self._cached_template = None
         self._cached_memory = None
@@ -73,7 +81,6 @@ class Chatbot:
             )
         return self._cached_memory
 
-    @property
     def callbacks(self):
         callback_handlers = CallbackHandlers()
         return callback_handlers.callbacks
@@ -83,10 +90,16 @@ class Chatbot:
         if self._cached_llm is None:
             if self.provider == "openai":
                 self._cached_llm = ChatOpenAI(
-                    model_name="gpt-3.5-turbo", streaming=True
+                    model_name=self.model_name,
+                    streaming=True,
+                    openai_api_key=os.getenv("OPENAI_API_KEY"),
                 )
             elif self.provider == "replicate":
-                pass
+                self._cached_llm = Replicate(
+                    model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
+                    # streaming=True,
+                    replicate_api_token=os.getenv("REPLICATE_API_KEY"),
+                )
         return self._cached_llm
 
     @property
@@ -102,9 +115,14 @@ class Chatbot:
 
 
 class PhilosopherChatbot(Chatbot):
-    def __init__(self, philosopher, provider):
+    def __init__(self, philosopher, provider, model_name, model_owner, model_version):
         super().__init__(
-            bot_type="philosopher", provider=provider, philosopher=philosopher
+            bot_type="philosopher",
+            provider=provider,
+            philosopher=philosopher,
+            model_name=model_name,
+            model_owner=model_owner,
+            model_version=model_version,
         )
         self.history = []
 
@@ -119,7 +137,7 @@ class PhilosopherChatbot(Chatbot):
             input=prompt,
             philosopher=self.philosopher,
             language=language,
-            callbacks=self.callbacks,
+            callbacks=self.callbacks(),
         )
         self.update_history()
         return response
@@ -134,8 +152,15 @@ class PhilosopherChatbot(Chatbot):
 
 
 class AssistantChatbot(Chatbot):
-    def __init__(self, history, provider):
-        super().__init__(philosopher=None, provider=provider, bot_type="assistant")
+    def __init__(self, history, provider, model_name, model_owner, model_version):
+        super().__init__(
+            philosopher=None,
+            provider=provider,
+            bot_type="assistant",
+            model_name=model_name,
+            model_owner=model_owner,
+            model_version=model_version,
+        )
         self.history = history
 
     @property

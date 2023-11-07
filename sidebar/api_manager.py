@@ -8,9 +8,21 @@ from utils.logging import configure_logger
 logger = configure_logger(__file__)
 
 AVAILABLE_MODELS = {
-    "gpt-3.5-turbo": {"provider": "openai", "model_owner": None},
-    "mistral-7b-instruct-v0.1": {"provider": "replicate", "model_owner": "mistralai"},
-    "llama-2-7b-chat": {"provider": "replicate", "model_owner": "meta"},
+    "gpt-3.5-turbo": {
+        "provider": "openai",
+        "model_owner": None,
+        "model_version": None,
+    },
+    "mistral-7b-instruct-v0.1": {
+        "provider": "replicate",
+        "model_owner": "mistralai",
+        "model_version": "83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70",
+    },
+    "llama-2-7b-chat": {
+        "provider": "replicate",
+        "model_owner": "meta",
+        "model_version": "13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0",
+    },
 }
 
 PROVIDER_FORMATS = {"openai": "OpenAI", "replicate": "Replicate"}
@@ -44,6 +56,7 @@ class APIManager:
 
         self.provider = self.available_models[self.chosen_model]["provider"]
         self.model_owner = self.available_models[self.chosen_model]["model_owner"]
+        self.model_version = self.available_models[self.chosen_model]["model_version"]
 
     def default_api_key(self):
         self.api_keys[self.provider]["use_default"] = st.checkbox(
@@ -133,7 +146,7 @@ class APIManager:
             self.authentificated = False
 
     @classmethod
-    @st.cache_data(max_entries=1)
+    @st.cache_data(max_entries=1, show_spinner=False)
     def authenticate_openai(cls, api_key, model_name):
         logger.info(msg="Requesting OpenAI API")
         response = requests.get(
@@ -143,7 +156,7 @@ class APIManager:
         return response.ok
 
     @classmethod
-    @st.cache_data(max_entries=1)
+    @st.cache_data(max_entries=1, show_spinner=False)
     def authenticate_replicate(cls, api_key, model_owner, model_name):
         logger.info(msg="Requesting Replicate API")
         response = requests.get(

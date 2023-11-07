@@ -5,7 +5,7 @@ import streamlit as st
 
 from chatbot import PhilosopherChatbot
 from utils.logging import configure_logger
-from sidebar import show_sidebar
+from sidebar import Sidebar
 
 logger = configure_logger(__file__)
 
@@ -22,18 +22,20 @@ def display_chat_history(chatbot):
     with contextlib.suppress(Exception):
         for message in chatbot.history:
             role, content = message["role"], message["content"]
-            avatar = chatbot.avatar if role == "ai" else None
-            st.chat_message(role, avatar=avatar).write(content)
+            if role == "ai":
+                st.chat_message(role, avatar=chatbot.avatar).markdown(content)
+            else:
+                st.chat_message(role).markdown(content)
 
 
-@st.cache_resource(max_entries=1)
-def initialize_chatbots(model, language):
-    logger.info(f"Initializing chatbots with {model=}, language={language}")
-    provider = st.session_state.api_manager.provider
-    st.session_state.chatbots = {
-        philosopher: PhilosopherChatbot(philosopher, provider=provider)
-        for philosopher in PHILOSOPHERS
-    }
+def initialize_chatbot(model_name, provider, model_owner, model_version):
+    st.session_state.chatbot = PhilosopherChatbot(
+        philosopher=st.session_state.current_choice,
+        provider=provider,
+        model_name=model_name,
+        model_owner=model_owner,
+        model_version=model_version,
+    )
 
 
 def main():
@@ -42,50 +44,53 @@ def main():
     st.title("Single mode", anchor=False)
     st.caption("Chat with the philosopher of your choice!")
 
-    show_sidebar()
+    sidebar = st.session_state.setdefault("sidebar", Sidebar())
+    sidebar.show()
 
-    authentificated = st.session_state.api_manager.authentificated
-    chosen_model = st.session_state.api_manager.chosen_model
-    selected_language = st.session_state.language_manager.selected_language
-
-    initialize_chatbots(model=chosen_model, language=selected_language)
+    authentificated = sidebar.api_manager.authentificated
+    provider = sidebar.api_manager.provider
+    chosen_model = sidebar.api_manager.chosen_model
+    model_owner = sidebar.api_manager.model_owner
+    model_version = sidebar.api_manager.model_version
+    selected_language = sidebar.language_manager.selected_language
 
     current_choice = st.selectbox(
         label="Philosopher:",
         placeholder="Choose one philosopher",
         options=PHILOSOPHERS,
         index=None,
+        key="current_choice",
         disabled=not authentificated,
+        on_change=initialize_chatbot,
+        kwargs={
+            "model_name": chosen_model,
+            "provider": provider,
+            "model_owner": model_owner,
+            "model_version": model_version,
+        },
     )
 
-    if current_choice:
-        chatbot = st.session_state.chatbots[current_choice]
+    if chatbot := st.session_state.get("chatbot"):
         display_chat_history(chatbot)
+
         if chatbot.history == []:
-            logger.info(f"Switching to {current_choice}")
-            logger.info("Generating greetings")
-            with st.spinner(f"{current_choice} is writing..."):
-                with st.chat_message("ai", avatar=chatbot.avatar):
-                    greetings = chatbot.greet(language=selected_language)
-                    st.write(greetings)
+            with st.chat_message("ai", avatar=chatbot.avatar):
+                greetings = chatbot.greet(language=selected_language)
+                st.markdown(greetings)
+
+        if prompt := st.chat_input(
+            placeholder="What do you want to know?",
+            disabled=not (current_choice and authentificated),
+        ):
+            st.chat_message("human").markdown(prompt)
+            with st.chat_message("ai", avatar=chatbot.avatar):
+                response = chatbot.chat(prompt, language=selected_language)
+                st.markdown(response)
+
     elif authentificated:
         st.info("Select a philosopher in the above menu", icon="ℹ️")
     else:
-        st.error(
-            "Please configure the model API in left sidebar to unlock selection",
-            icon="🔒",
-        )
-
-    if prompt := st.chat_input(
-        placeholder="What do you want to know?",
-        disabled=not (current_choice and authentificated),
-    ):
-        logger.info("User prompt submitted")
-        st.chat_message("human").write(prompt)
-        with st.spinner(f"{current_choice} is writing..."):
-            logger.info("Generating response to user prompt")
-            with st.chat_message("ai", avatar=chatbot.avatar):
-                st.write(chatbot.chat(prompt, language=selected_language))
+        st.error("Please configure API in left sidebar to unlock selection", icon="🔒")
 
 
 if __name__ == "__main__":

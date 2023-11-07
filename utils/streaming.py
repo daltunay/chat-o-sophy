@@ -16,27 +16,27 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
         self.container.empty()
 
 
-class BusyCallbackHandler(BaseCallbackHandler):  # TODO: implement in pages
-    def __init__(self):
-        pass
+# class BusyCallbackHandler(BaseCallbackHandler):
+#     def __init__(self):
+#         pass
 
-    def on_llm_start(self, *args, **kwargs):
-        st.session_state.busy = True
+#     def on_llm_start(self, *args, **kwargs):
+#         st.session_state.busy = True
 
-    def on_llm_end(self, *args, **kwargs):
-        st.session_state.busy = False
+#     def on_llm_end(self, *args, **kwargs):
+#         st.session_state.busy = False
 
 
 class CallbackHandlers:
     def __init__(self):
         self.chat_callback_handler = StreamingChatCallbackHandler()
         self.stdout_callback_handler = StreamingStdOutCallbackHandler()
-        self.busy_callback_handler = BusyCallbackHandler()
+        # self.busy_callback_handler = BusyCallbackHandler()
 
     @property
     def callbacks(self):
         return [
             self.chat_callback_handler,
             self.stdout_callback_handler,
-            self.busy_callback_handler,
+            # self.busy_callback_handler,
         ]

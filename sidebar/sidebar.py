@@ -4,10 +4,14 @@ from .api_manager import APIManager
 from .language_manager import LanguageManager
 
 
-def show_sidebar():
-    st.session_state.setdefault("language_manager", LanguageManager())
-    st.session_state.setdefault("api_manager", APIManager())
+class Sidebar:
+    def __init__(self):
+        self.language_manager = LanguageManager()
+        self.api_manager = APIManager()
 
-    with st.sidebar:
-        st.session_state.language_manager.main()
-        st.session_state.api_manager.main()
+    def show(self, show_language=True, show_api=True):
+        with st.sidebar:
+            if show_language:
+                self.language_manager.main()
+            if show_api:
+                self.api_manager.main()

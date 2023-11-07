@@ -1,1 +1,1 @@
-from .sidebar import show_sidebar
+from .sidebar import Sidebar

@@ -2,7 +2,7 @@ import streamlit as st
 
 from utils.logging import configure_logger
 from utils.logo import generate_logo
-from sidebar import show_sidebar
+from sidebar import Sidebar
 
 logger = configure_logger(__file__)
 
@@ -12,7 +12,8 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 def main():
     logger.info("Running home")
 
-    show_sidebar()
+    sidebar = st.session_state.setdefault("sidebar", Sidebar())
+    sidebar.show()
 
     col1, col2 = st.columns(spec=[0.7, 0.3], gap="large")
     with col1:
