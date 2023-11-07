@@ -17,15 +17,6 @@ API_KEYS = {
 
 class APIManager:
     def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
-        if "api_manager" in st.session_state:
-            self.provider = st.session_state.api_manager.provider
-            self.chosen_model = st.session_state.api_manager.chosen_model
-            self.available_models = st.session_state.api_manager.available_models
-            self.api_keys = st.session_state.api_manager.api_keys
-        else:
-            self.first_init(default_provider, default_model)
-
-    def first_init(self, default_provider, default_model):
         self.provider = default_provider
         self.chosen_model = default_model
         self.available_models = AVAILABLE_MODELS
@@ -65,15 +56,18 @@ class APIManager:
     def api_key_form(self):
         with st.form(self.provider):
             if self.provider == "openai":
-                provider_label = "OpenAI API key:"
+                provider_label = "Enter your OpenAI API key:"
                 provider_help = "https://platform.openai.com/account/api-keys"
             elif self.provider == "replicate":
-                provider_label = "Replicate API key:"
+                provider_label = "Enter your Replicate API key:"
                 provider_help = "https://replicate.com/account/api-tokens"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
                 label=provider_label,
                 value=self.api_keys[self.provider]["api_key"],
+                placeholder="[default]"
+                if self.api_keys[self.provider]["use_default"]
+                else "",
                 type="password",
                 help=provider_help,
                 autocomplete="",
