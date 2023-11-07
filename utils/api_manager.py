@@ -9,24 +9,36 @@ AVAILABLE_MODELS = {
     "llama-2-7b-chat": {"provider": "replicate", "model_owner": "meta"},
 }
 
+API_KEYS = {
+    provider: {"api_key": "", "use_default": True}
+    for provider in {model_info["provider"] for model_info in AVAILABLE_MODELS.values()}
+}
+
 
 class APIManager:
     def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
+        if "api_manager" in st.session_state:
+            self.provider = st.session_state.api_manager.provider
+            self.chosen_model = st.session_state.api_manager.chosen_model
+            self.available_models = st.session_state.api_manager.available_models
+            self.api_keys = st.session_state.api_manager.api_keys
+        else:
+            self.first_init(default_provider, default_model)
+
+    def first_init(self, default_provider, default_model):
         self.provider = default_provider
         self.chosen_model = default_model
         self.available_models = AVAILABLE_MODELS
-        self.api_keys = {
-            provider: {"api_key": "", "use_default": True}
-            for provider in {
-                model_info["provider"] for model_info in AVAILABLE_MODELS.values()
-            }
-        }
+        self.api_keys = API_KEYS
 
     def choose_model(self):
         self.chosen_model = st.selectbox(
             label="Select the model:",
             options=self.available_models.keys(),
-            index=list(self.available_models.keys()).index(self.chosen_model),
+            key="api_manager.chosen_model",
+            index=list(self.available_models.keys()).index(
+                st.session_state.get("api_manager.chosen_model", self.chosen_model)
+            ),
         )
 
         self.provider = self.available_models[self.chosen_model]["provider"]
@@ -35,7 +47,10 @@ class APIManager:
     def default_api_key(self):
         self.api_keys[self.provider]["use_default"] = st.checkbox(
             label="Default API key",
-            value=self.api_keys[self.provider]["use_default"],
+            key="api_manager.use_default",
+            value=st.session_state.get(
+                "api_manager.use_default", self.api_keys[self.provider]["use_default"]
+            ),
             help="Use the provided default API key, if you don't have any.",
         )
 
@@ -116,7 +131,7 @@ class APIManager:
         return response.ok
 
     def main(self):
-        st.title("LLM API")
+        st.title("Large Language Model - API")
         self.choose_model()
         self.default_api_key()
         self.api_key_form()
