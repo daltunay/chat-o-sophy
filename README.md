@@ -32,12 +32,15 @@ This command will create a virtual environment and install the necessary depende
 
 ## (Optional) Setting up a default OpenAI API Key
 
-The application lets the user decide whether to use their own API key or the default one.  
-You can specifiy the default key in `.streamlit/secrets.toml`: 
+The application lets the user decide whether to use their own API keys or the default one.  
+You can specifiy the default keys in `.streamlit/secrets.toml`: 
 
 ```toml
 [openai_api]
-key="sk-..."
+key="<OPENAI_API_KEY>"
+
+[replicate_api]
+key="<REPLICATE_API_TOKEN>"
 ```
 
 ## Running the Application
