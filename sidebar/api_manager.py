@@ -23,9 +23,7 @@ class APIManager:
         self.authentificated = False
         self.api_keys = {
             provider: {"api_key": "", "use_default": True}
-            for provider in {
-                model_info["provider"] for model_info in MODELS.values()
-            }
+            for provider in {model_info["provider"] for model_info in MODELS.values()}
         }
 
     def choose_model(self):
@@ -70,19 +68,17 @@ class APIManager:
 
     def api_key_form(self):
         with st.form(self.provider):
-            if self.provider == "openai":
-                provider_help = "Click [here](https://platform.openai.com/account/api-keys) to get your OpenAI API key"
-            elif self.provider == "replicate":
-                provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
+            provider_label = PROVIDERS[self.provider]["label"]
+            provider_help = PROVIDERS[self.provider]["api_help"]
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
-                label=f"Enter your {PROVIDERS[self.provider]['label']} API key:",
+                label=f"Enter your {provider_label} API key:",
                 value=self.api_keys[self.provider]["api_key"],
                 placeholder="[default]"
                 if self.api_keys[self.provider]["use_default"]
                 else "",
                 type="password",
-                help=provider_help,
+                help=f"Click [here]({provider_help}) to get your {provider_label} API key",
                 autocomplete="",
                 disabled=not self.chosen_model
                 or self.api_keys[self.provider]["use_default"],
@@ -109,6 +105,9 @@ class APIManager:
             )
 
     def authenticate(self, api_key, provider, model_name, model_owner):
+        provider_label = PROVIDERS[self.provider]["label"]
+        provider_env_var = PROVIDERS[provider]["env_var"]
+
         if provider == "openai":
             success = self.authenticate_openai(api_key, model_name)
         elif provider == "replicate":
@@ -117,18 +116,18 @@ class APIManager:
         if success:
             logger.info("Authentification successful")
             st.toast(
-                f"API Authentication successful — {PROVIDERS[self.provider]['label']}",
+                f"API Authentication successful — {provider_label}",
                 icon="✅",
             )
-            os.environ[PROVIDERS[provider]["env_var"]] = api_key
+            os.environ[provider_env_var] = api_key
             self.authentificated = True
         else:
             logger.info("Authentification failed")
             st.toast(
-                f"API Authentication failed — {PROVIDERS[self.provider]['label']}",
+                f"API Authentication failed — {provider_label}",
                 icon="🚫",
             )
-            os.environ.pop(PROVIDERS[provider]["env_var"], None)
+            os.environ.pop(provider_env_var, None)
             self.authentificated = False
 
     @classmethod
@@ -152,14 +151,16 @@ class APIManager:
         return response.ok
 
     def show_status(self):
+        provider_label = PROVIDERS[self.provider]["label"]
+
         if self.authentificated:
             st.success(
-                f"Successfully authenticated to {PROVIDERS[self.provider]['label']} API",
+                f"Successfully authenticated to {provider_label} API",
                 icon="🔐",
             )
         else:
             st.info(
-                f"Please configure the {PROVIDERS[self.provider]['label']} API above",
+                f"Please configure the {provider_label} API above",
                 icon="🔐",
             )
 
