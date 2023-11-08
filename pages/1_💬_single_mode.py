@@ -19,14 +19,14 @@ PHILOSOPHERS = [
 
 
 def display_chat_history(chatbot):
-    with contextlib.suppress(Exception):
-        for message in chatbot.history:
-            role, content = message["role"], message["content"]
-            avatar = chatbot.avatar if role == "ai" else None
-            st.chat_message(role, avatar=avatar).markdown(content)
+    for message in chatbot.history:
+        role, content = message["role"], message["content"]
+        avatar = chatbot.avatar if role == "ai" else None
+        st.chat_message(role, avatar=avatar).markdown(content)
 
 
 def initialize_chatbot(model_name, provider, model_owner, model_version):
+    st.empty()
     st.session_state.chatbot = PhilosopherChatbot(
         philosopher=st.session_state.current_choice,
         provider=provider,
@@ -73,8 +73,7 @@ def main():
 
         if chatbot.history == []:
             with st.chat_message("ai", avatar=chatbot.avatar):
-                greetings = chatbot.greet(language=selected_language)
-                st.markdown(greetings)
+                chatbot.greet(language=selected_language)
 
         if prompt := st.chat_input(
             placeholder="What do you want to know?",
@@ -82,8 +81,7 @@ def main():
         ):
             st.chat_message("human").markdown(prompt)
             with st.chat_message("ai", avatar=chatbot.avatar):
-                response = chatbot.chat(prompt, language=selected_language)
-                st.markdown(response)
+                chatbot.chat(prompt, language=selected_language)
 
     elif authentificated:
         st.info("Select a philosopher in the above menu", icon="ℹ️")
