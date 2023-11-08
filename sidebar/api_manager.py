@@ -2,70 +2,47 @@ import os
 
 import requests
 import streamlit as st
+import yaml
 
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-AVAILABLE_MODELS = {
-    "gpt-3.5-turbo": {
-        "provider": "openai",
-        "model_owner": None,
-        "model_version": None,
-    },
-    "mistral-7b-instruct-v0.1": {
-        "provider": "replicate",
-        "model_owner": "mistralai",
-        "model_version": "83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70",
-    },
-    "llama-2-7b-chat": {
-        "provider": "replicate",
-        "model_owner": "meta",
-        "model_version": "13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0",
-    },
-}
 
-PROVIDER_FORMATS = {
-    "openai": {
-        "label": "OpenAI",
-        "env_var": "OPENAI_API_KEY",
-    },
-    "replicate": {
-        "label": "Replicate",
-        "env_var": "REPLICATE_API_TOKEN",
-    },
-}
+with open("model_providers.yaml") as f:
+    model_providers = yaml.safe_load(f)
 
-API_KEYS = {
-    provider: {"api_key": "", "use_default": True}
-    for provider in {model_info["provider"] for model_info in AVAILABLE_MODELS.values()}
-}
+AVAILABLE_MODELS = model_providers["AVAILABLE_MODELS"]
+PROVIDER_FORMATS = model_providers["PROVIDER_FORMATS"]
 
 
 class APIManager:
     def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
         self.provider = default_provider
         self.chosen_model = default_model
-        self.provider_formats = PROVIDER_FORMATS
-        self.available_models = AVAILABLE_MODELS
-        self.api_keys = API_KEYS
         self.authentificated = False
+        self.api_keys = {
+            provider: {"api_key": "", "use_default": True}
+            for provider in {
+                model_info["provider"] for model_info in AVAILABLE_MODELS.values()
+            }
+        }
 
     def choose_model(self):
         self.chosen_model = st.selectbox(
             label="Select the model:",
-            options=self.available_models.keys(),
+            options=AVAILABLE_MODELS.keys(),
             key="api_manager.chosen_model",
-            index=list(self.available_models.keys()).index(
+            index=list(AVAILABLE_MODELS.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
             on_change=logger.info,
             kwargs={"msg": "Switching model"},
         )
 
-        self.provider = self.available_models[self.chosen_model]["provider"]
-        self.model_owner = self.available_models[self.chosen_model]["model_owner"]
-        self.model_version = self.available_models[self.chosen_model]["model_version"]
+        self.provider = AVAILABLE_MODELS[self.chosen_model]["provider"]
+        self.model_owner = AVAILABLE_MODELS[self.chosen_model]["model_owner"]
+        self.model_version = AVAILABLE_MODELS[self.chosen_model]["model_version"]
 
     def default_api_key(self):
         self.api_keys[self.provider]["use_default"] = st.checkbox(
@@ -99,7 +76,7 @@ class APIManager:
                 provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
-                label=f"Enter your {self.provider_formats[self.provider]['label']} API key:",
+                label=f"Enter your {PROVIDER_FORMATS[self.provider]['label']} API key:",
                 value=self.api_keys[self.provider]["api_key"],
                 placeholder="[default]"
                 if self.api_keys[self.provider]["use_default"]
@@ -140,18 +117,18 @@ class APIManager:
         if success:
             logger.info("Authentification successful")
             st.toast(
-                f"API Authentication successful — {self.provider_formats[self.provider]['label']}",
+                f"API Authentication successful — {PROVIDER_FORMATS[self.provider]['label']}",
                 icon="✅",
             )
-            os.environ[self.provider_formats[provider]["env_var"]] = api_key
+            os.environ[PROVIDER_FORMATS[provider]["env_var"]] = api_key
             self.authentificated = True
         else:
             logger.info("Authentification failed")
             st.toast(
-                f"API Authentication failed — {self.provider_formats[self.provider]['label']}",
+                f"API Authentication failed — {PROVIDER_FORMATS[self.provider]['label']}",
                 icon="🚫",
             )
-            os.environ.pop(self.provider_formats[provider]["env_var"], None)
+            os.environ.pop(PROVIDER_FORMATS[provider]["env_var"], None)
             self.authentificated = False
 
     @classmethod
@@ -177,12 +154,12 @@ class APIManager:
     def show_status(self):
         if self.authentificated:
             st.success(
-                f"Successfully authenticated to {self.provider_formats[self.provider]['label']} API",
+                f"Successfully authenticated to {PROVIDER_FORMATS[self.provider]['label']} API",
                 icon="🔐",
             )
         else:
             st.info(
-                f"Please configure the {self.provider_formats[self.provider]['label']} API above",
+                f"Please configure the {PROVIDER_FORMATS[self.provider]['label']} API above",
                 icon="🔐",
             )
 
