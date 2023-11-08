@@ -67,6 +67,13 @@ def main():
         },
     )
 
+    if not authentificated:
+        st.error("Configure LLM in left sidebar to unlock selection", icon="🔒")
+        return
+    elif not current_choice:
+        st.info("Select a philosopher in the above menu", icon="ℹ️")
+        return
+
     if chatbot := st.session_state.get("chatbot"):
         display_chat_history(chatbot)
 
@@ -81,11 +88,6 @@ def main():
             st.chat_message("human").markdown(prompt)
             with st.chat_message("ai", avatar=chatbot.avatar):
                 chatbot.chat(prompt, language=selected_language)
-
-    elif authentificated:
-        st.info("Select a philosopher in the above menu", icon="ℹ️")
-    else:
-        st.error("Please configure API in left sidebar to unlock selection", icon="🔒")
 
 
 if __name__ == "__main__":
