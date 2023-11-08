@@ -22,10 +22,8 @@ def display_chat_history(chatbot):
     with contextlib.suppress(Exception):
         for message in chatbot.history:
             role, content = message["role"], message["content"]
-            if role == "ai":
-                st.chat_message(role, avatar=chatbot.avatar).markdown(content)
-            else:
-                st.chat_message(role).markdown(content)
+            avatar = chatbot.avatar if role == "ai" else None
+            st.chat_message(role, avatar=avatar).markdown(content)
 
 
 def initialize_chatbot(model_name, provider, model_owner, model_version):
