@@ -4,8 +4,8 @@ import os
 import streamlit as st
 
 from chatbot import PhilosopherChatbot
-from utils.logging import configure_logger
 from sidebar import Sidebar
+from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
@@ -26,7 +26,6 @@ def display_chat_history(chatbot):
 
 
 def initialize_chatbot(model_name, provider, model_owner, model_version):
-    st.empty()
     st.session_state.chatbot = PhilosopherChatbot(
         philosopher=st.session_state.current_choice,
         provider=provider,
