@@ -61,11 +61,11 @@ class Chatbot:
 
             self._cached_template = ChatPromptTemplate.from_messages(
                 [
-                    SystemMessagePromptTemplate.from_template(system_message),
+                    SystemMessagePromptTemplate.from_template(template=system_message),
                     MessagesPlaceholder(variable_name="history"),
-                    HumanMessagePromptTemplate.from_template("{input}"),
+                    HumanMessagePromptTemplate.from_template(template="{input}"),
                     SystemMessagePromptTemplate.from_template(
-                        "Your answer in {language}:"
+                        template="Your answer in {language}:"
                     ),
                 ]
             )
@@ -97,7 +97,6 @@ class Chatbot:
             elif self.provider == "replicate":
                 self._cached_llm = Replicate(
                     model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
-                    # streaming=True,
                     replicate_api_token=os.getenv("REPLICATE_API_KEY"),
                 )
         return self._cached_llm
@@ -178,7 +177,7 @@ class AssistantChatbot(Chatbot):
 
     def summarize_responses(self, language):
         return self.chain.run(
-            input=self.history_str, language=language, callbacks=self.callbacks
+            input=self.history_str, language=language, callbacks=self.callbacks()
         )
 
     def summary_table(self, language):
@@ -186,5 +185,5 @@ class AssistantChatbot(Chatbot):
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
             "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
             language=language,
-            callbacks=self.callbacks,
+            callbacks=self.callbacks(),
         )
