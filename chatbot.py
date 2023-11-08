@@ -1,5 +1,3 @@
-import os
-
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import Replicate
@@ -90,14 +88,12 @@ class Chatbot:
         if self._cached_llm is None:
             if self.provider == "openai":
                 self._cached_llm = ChatOpenAI(
-                    model_name=self.model_name,
+                    model=self.model_name,
                     streaming=True,
-                    openai_api_key=os.getenv("OPENAI_API_KEY"),
                 )
             elif self.provider == "replicate":
                 self._cached_llm = Replicate(
                     model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
-                    replicate_api_token=os.getenv("REPLICATE_API_KEY"),
                 )
         return self._cached_llm
 

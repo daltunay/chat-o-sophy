@@ -25,7 +25,16 @@ AVAILABLE_MODELS = {
     },
 }
 
-PROVIDER_FORMATS = {"openai": "OpenAI", "replicate": "Replicate"}
+PROVIDER_FORMATS = {
+    "openai": {
+        "label": "OpenAI",
+        "env_var": "OPENAI_API_KEY",
+    },
+    "replicate": {
+        "label": "Replicate",
+        "env_var": "REPLICATE_API_TOKEN",
+    },
+}
 
 API_KEYS = {
     provider: {"api_key": "", "use_default": True}
@@ -90,7 +99,7 @@ class APIManager:
                 provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
-                label=f"Enter your {self.provider_formats[self.provider]} API key:",
+                label=f"Enter your {self.provider_formats[self.provider]['label']} API key:",
                 value=self.api_keys[self.provider]["api_key"],
                 placeholder="[default]"
                 if self.api_keys[self.provider]["use_default"]
@@ -131,18 +140,18 @@ class APIManager:
         if success:
             logger.info("Authentification successful")
             st.toast(
-                f"API Authentication successful — {self.provider_formats[self.provider]}",
+                f"API Authentication successful — {self.provider_formats[self.provider]['label']}",
                 icon="✅",
             )
-            os.environ[f"{provider.upper()}_API_KEY"] = api_key
+            os.environ[self.provider_formats[provider]["env_var"]] = api_key
             self.authentificated = True
         else:
             logger.info("Authentification failed")
             st.toast(
-                f"API Authentication failed — {self.provider_formats[self.provider]}",
+                f"API Authentication failed — {self.provider_formats[self.provider]['label']}",
                 icon="🚫",
             )
-            os.environ.pop(f"{provider.upper()}_API_KEY", None)
+            os.environ.pop(self.provider_formats[provider]["env_var"], None)
             self.authentificated = False
 
     @classmethod
@@ -168,12 +177,12 @@ class APIManager:
     def show_status(self):
         if self.authentificated:
             st.success(
-                f"Successfully authenticated to {self.provider_formats[self.provider]} API",
+                f"Successfully authenticated to {self.provider_formats[self.provider]['label']} API",
                 icon="🔐",
             )
         else:
             st.info(
-                f"Please configure the {self.provider_formats[self.provider]} API above",
+                f"Please configure the {self.provider_formats[self.provider]['label']} API above",
                 icon="🔐",
             )
 
