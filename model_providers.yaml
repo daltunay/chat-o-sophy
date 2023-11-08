@@ -1,4 +1,4 @@
-AVAILABLE_MODELS:
+MODELS:
   gpt-3.5-turbo:
     provider: openai
     model_owner: null
@@ -12,7 +12,7 @@ AVAILABLE_MODELS:
     model_owner: meta
     model_version: 13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0
 
-PROVIDER_FORMATS:
+PROVIDERS:
   openai:
     label: OpenAI
     env_var: OPENAI_API_KEY

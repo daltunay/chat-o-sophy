@@ -12,8 +12,8 @@ logger = configure_logger(__file__)
 with open("model_providers.yaml") as f:
     model_providers = yaml.safe_load(f)
 
-AVAILABLE_MODELS = model_providers["AVAILABLE_MODELS"]
-PROVIDER_FORMATS = model_providers["PROVIDER_FORMATS"]
+MODELS = model_providers["MODELS"]
+PROVIDERS = model_providers["PROVIDERS"]
 
 
 class APIManager:
@@ -24,25 +24,25 @@ class APIManager:
         self.api_keys = {
             provider: {"api_key": "", "use_default": True}
             for provider in {
-                model_info["provider"] for model_info in AVAILABLE_MODELS.values()
+                model_info["provider"] for model_info in MODELS.values()
             }
         }
 
     def choose_model(self):
         self.chosen_model = st.selectbox(
             label="Select the model:",
-            options=AVAILABLE_MODELS.keys(),
+            options=MODELS.keys(),
             key="api_manager.chosen_model",
-            index=list(AVAILABLE_MODELS.keys()).index(
+            index=list(MODELS.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
             on_change=logger.info,
             kwargs={"msg": "Switching model"},
         )
 
-        self.provider = AVAILABLE_MODELS[self.chosen_model]["provider"]
-        self.model_owner = AVAILABLE_MODELS[self.chosen_model]["model_owner"]
-        self.model_version = AVAILABLE_MODELS[self.chosen_model]["model_version"]
+        self.provider = MODELS[self.chosen_model]["provider"]
+        self.model_owner = MODELS[self.chosen_model]["model_owner"]
+        self.model_version = MODELS[self.chosen_model]["model_version"]
 
     def default_api_key(self):
         self.api_keys[self.provider]["use_default"] = st.checkbox(
@@ -76,7 +76,7 @@ class APIManager:
                 provider_help = "Click [here](https://replicate.com/account/api-tokens) to get your Replicate API key"
 
             self.api_keys[self.provider]["api_key"] = st.text_input(
-                label=f"Enter your {PROVIDER_FORMATS[self.provider]['label']} API key:",
+                label=f"Enter your {PROVIDERS[self.provider]['label']} API key:",
                 value=self.api_keys[self.provider]["api_key"],
                 placeholder="[default]"
                 if self.api_keys[self.provider]["use_default"]
@@ -117,18 +117,18 @@ class APIManager:
         if success:
             logger.info("Authentification successful")
             st.toast(
-                f"API Authentication successful — {PROVIDER_FORMATS[self.provider]['label']}",
+                f"API Authentication successful — {PROVIDERS[self.provider]['label']}",
                 icon="✅",
             )
-            os.environ[PROVIDER_FORMATS[provider]["env_var"]] = api_key
+            os.environ[PROVIDERS[provider]["env_var"]] = api_key
             self.authentificated = True
         else:
             logger.info("Authentification failed")
             st.toast(
-                f"API Authentication failed — {PROVIDER_FORMATS[self.provider]['label']}",
+                f"API Authentication failed — {PROVIDERS[self.provider]['label']}",
                 icon="🚫",
             )
-            os.environ.pop(PROVIDER_FORMATS[provider]["env_var"], None)
+            os.environ.pop(PROVIDERS[provider]["env_var"], None)
             self.authentificated = False
 
     @classmethod
@@ -154,12 +154,12 @@ class APIManager:
     def show_status(self):
         if self.authentificated:
             st.success(
-                f"Successfully authenticated to {PROVIDER_FORMATS[self.provider]['label']} API",
+                f"Successfully authenticated to {PROVIDERS[self.provider]['label']} API",
                 icon="🔐",
             )
         else:
             st.info(
-                f"Please configure the {PROVIDER_FORMATS[self.provider]['label']} API above",
+                f"Please configure the {PROVIDERS[self.provider]['label']} API above",
                 icon="🔐",
             )
 
