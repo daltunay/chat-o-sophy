@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Dict, List, Literal, Optional, TypedDict, Union
+from typing import List, Literal, Optional, TypedDict, Union
 
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import LLMChain
@@ -14,7 +14,7 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-from utils.streaming import CallbackHandlers
+from utils.streaming import CustomStreamingCallbackHandlers
 
 
 class ChatHistory(TypedDict):
@@ -81,8 +81,9 @@ class Chatbot:
             return_messages=True,
         )
 
+    @cached_property
     def callbacks(self) -> List[BaseCallbackHandler]:
-        callback_handlers = CallbackHandlers()
+        callback_handlers = CustomStreamingCallbackHandlers()
         return callback_handlers.callbacks
 
     @cached_property
@@ -139,7 +140,7 @@ class PhilosopherChatbot(Chatbot):
             input=prompt,
             philosopher=self.philosopher,
             language=language,
-            callbacks=self.callbacks(),
+            callbacks=self.callbacks,
         )
         self.update_history()
         return response
@@ -189,7 +190,7 @@ class AssistantChatbot(Chatbot):
         self, language: Literal["English", "French", "German", "Spanish"]
     ):
         return self.chain.run(
-            input=self.history_str, language=language, callbacks=self.callbacks()
+            input=self.history_str, language=language, callbacks=self.callbacks
         )
 
     def summary_table(
@@ -199,5 +200,5 @@ class AssistantChatbot(Chatbot):
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
             "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
             language=language,
-            callbacks=self.callbacks(),
+            callbacks=self.callbacks,
         )
