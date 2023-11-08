@@ -1,3 +1,6 @@
+from typing import Any, Optional
+from uuid import UUID
+from langchain.schema.output import LLMResult
 import streamlit as st
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -11,6 +14,9 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
     def on_llm_new_token(self, token, *args, **kwargs):
         self.text += token
         self.container.markdown(self.text, unsafe_allow_html=True)
+    
+    def on_llm_end(self, *args, **kwargs):
+        pass
 
 
 # class BusyCallbackHandler(BaseCallbackHandler):
