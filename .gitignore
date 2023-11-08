@@ -4,4 +4,4 @@ __pycache__/
 .mypy_cache/
 .streamlit/secrets.toml
 pages/session_state.py
-*.ipynb
+test.*
