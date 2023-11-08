@@ -113,12 +113,12 @@ class APIManager:
         elif provider == "replicate":
             success = self.authenticate_replicate(api_key, model_owner, model_name)
 
-        if success and not self.authentificated:  # TODO: FIX
+        if success:  # TODO: FIX
             logger.info("Authentification successful")
             st.toast(f"API Authentication successful — {provider_label}", icon="✅")
             os.environ[provider_env_var] = api_key
             self.authentificated = True
-        elif not success and self.authentificated:
+        elif not success:
             logger.info("Authentification failed")
             st.toast(f"API Authentication failed — {provider_label}", icon="🚫")
             os.environ.pop(provider_env_var, None)
