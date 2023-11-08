@@ -12,9 +12,6 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
         self.text += token
         self.container.markdown(self.text, unsafe_allow_html=True)
 
-    def on_llm_end(self, *args, **kwargs):
-        self.container.empty()
-
 
 # class BusyCallbackHandler(BaseCallbackHandler):
 #     def __init__(self):
