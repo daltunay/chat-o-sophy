@@ -36,8 +36,6 @@ def initialize_chatbot(model_name, provider, model_owner, model_version):
 
 
 def main():
-    logger.info("Running single mode")
-
     st.title("Single mode", anchor=False)
     st.caption("Chat with the philosopher of your choice!")
 
