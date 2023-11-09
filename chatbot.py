@@ -111,7 +111,7 @@ class PhilosopherChatbot(Chatbot):
             model_owner=model_owner,
             model_version=model_version,
         )
-        self.history = []
+        self.history: t.ChatHistoryTypeAs = []
 
     def greet(self, language: t.LanguageTypeAs) -> str:
         return self.chat(
