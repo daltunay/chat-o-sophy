@@ -85,7 +85,7 @@ class Chatbot:
         elif self.model_provider == "replicate":
             return Replicate(
                 model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
-                model_kwargs={"max_length": 4096},
+                model_kwargs={"max_length": 8192},
             )
 
     @cached_property
