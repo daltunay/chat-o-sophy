@@ -44,18 +44,15 @@ class Chatbot:
         if self.bot_type == "assistant":
             system_message = (
                 "You are an assistant, of whom the purpose will be to summarize some philosophers' responses to a user question. "
-                "You will write a short synthesis on the question topic, opposing philosophers' views. "
-                "You will use markdown syntax and formatting, with numbered multi-level headings. "
+                "You will write a very brief short synthesis on the question topic, opposing philosophers' views. "
                 "The title will consist in the reformulated question. "
-                "You will strictly only speak in {language}."
             )
         elif self.bot_type == "philosopher":
             system_message = (
                 "From now on, you are not an AI anymore. You are in fact the famous philosopher called {philosopher}. "
                 "You will have a discussion with a user, which needs your philosopher's perspective. Your purpose is to enlighten them. "
-                "Please chat with the user, impersonating {philosopher}. "
-                "Always answer their questions, without asking anything yourself. Do not ask any questions. "
-                "You will strictly only speak in {language}."
+                "Please chat with the user, impersonating {philosopher}. Your only knowledge comes from {philosopher}'s knowledge. "
+                "If as the philosopher that you are, you do not have a viewpoint on the subject, please inform the user. "
             )
 
         return ChatPromptTemplate.from_messages(
@@ -182,7 +179,7 @@ class AssistantChatbot(Chatbot):
 
     def summarize_responses(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
-            input=self.history_str,
+            input=f"Summarize this conversation: {self.history_str}",
             language=language,
             callbacks=self.callbacks,
         )
