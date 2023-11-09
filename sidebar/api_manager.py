@@ -40,7 +40,7 @@ class APIManager:
             index=list(MODELS.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
-            help="Streaming output is currently only supported on gpt-3.5-turbo"
+            help="Streaming output is currently only supported on gpt-3.5-turbo",
             on_change=self.reset_state
         )
 
