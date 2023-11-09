@@ -18,14 +18,14 @@ pip install poetry
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/chat-o-sophy.git
+git clone https://github.com/daltunay/chat-o-sophy.git
 cd chat-o-sophy
 ```
 
 2. Set up the project dependencies using Poetry:
 
 ```bash
-poetry install
+poetry install --no-root
 ```
 
 This command will create a virtual environment and install the necessary dependencies.
