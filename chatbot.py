@@ -1,9 +1,9 @@
 from functools import cached_property
-from typing import List, Literal, Optional, TypedDict, Union
 
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
+from langchain.chat_models.base import BaseChatModel
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import (
@@ -14,32 +14,19 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
+import utils.typing as t
 from utils.streaming import CustomStreamingCallbackHandlers
-
-BotTypeAs = Literal["philosopher", "assistant"]
-PhilosopherTypeAs = str
-ProviderTypeAs = Literal["openai", "replicate"]
-ModelNameTypeAs = Literal[
-    "gpt-3.5-turbo",
-    "mistral-7b-instruct-v0.1",
-    "llama-2-7b-chat",
-]
-LanguageTypeAs = Literal["English", "French", "German", "Spanish"]
-ModelOwnerTypeAs = Optional[Literal["mistralai", "meta"]]
-ModelVersionTypeAs = Optional[str]
-RoleTypeAs = Literal["ai", "human"]
-ChatHistoryTypeAs = List[TypedDict("ChatHistory", {"role": RoleTypeAs, "content": str})]
 
 
 class Chatbot:
     def __init__(
         self,
-        bot_type: BotTypeAs,
-        philosopher: PhilosopherTypeAs,
-        provider: ProviderTypeAs,
-        model_name: ModelNameTypeAs,
-        model_owner: ModelOwnerTypeAs,
-        model_version: ModelVersionTypeAs,
+        bot_type: t.BotTypeAs,
+        philosopher: t.PhilosopherTypeAs,
+        provider: t.ProviderTypeAs,
+        model_name: t.ModelNameTypeAs,
+        model_owner: t.ModelOwnerTypeAs,
+        model_version: t.ModelVersionTypeAs,
     ) -> None:
         self.bot_type = bot_type
         self.philosopher = philosopher
@@ -91,12 +78,12 @@ class Chatbot:
         )
 
     @cached_property
-    def callbacks(self) -> List[BaseCallbackHandler]:
+    def callbacks(self) -> t.List[BaseCallbackHandler]:
         callback_handlers = CustomStreamingCallbackHandlers()
         return callback_handlers.callbacks
 
     @cached_property
-    def llm(self) -> Union[ChatOpenAI, Replicate]:
+    def llm(self) -> BaseChatModel:
         if self.provider == "openai":
             return ChatOpenAI(
                 model=self.model_name,
@@ -120,11 +107,11 @@ class Chatbot:
 class PhilosopherChatbot(Chatbot):
     def __init__(
         self,
-        philosopher: PhilosopherTypeAs,
-        provider: ProviderTypeAs,
-        model_name: ModelNameTypeAs,
-        model_owner: ModelOwnerTypeAs,
-        model_version: ModelVersionTypeAs,
+        philosopher: t.PhilosopherTypeAs,
+        provider: t.ProviderTypeAs,
+        model_name: t.ModelNameTypeAs,
+        model_owner: t.ModelOwnerTypeAs,
+        model_version: t.ModelVersionTypeAs,
     ) -> None:
         super().__init__(
             bot_type="philosopher",
@@ -136,20 +123,13 @@ class PhilosopherChatbot(Chatbot):
         )
         self.history = []
 
-    def greet(
-        self,
-        language: LanguageTypeAs,
-    ) -> str:
+    def greet(self, language: t.LanguageTypeAs) -> str:
         return self.chat(
             prompt="I am your guest. Please present yourself, and greet me.",
             language=language,
         )
 
-    def chat(
-        self,
-        prompt: str,
-        language: LanguageTypeAs,
-    ) -> str:
+    def chat(self, prompt: str, language: t.LanguageTypeAs) -> str:
         response = self.chain.run(
             input=prompt,
             philosopher=self.philosopher,
@@ -171,11 +151,11 @@ class PhilosopherChatbot(Chatbot):
 class AssistantChatbot(Chatbot):
     def __init__(
         self,
-        history: ChatHistoryTypeAs,
-        provider: ProviderTypeAs,
-        model_name: ModelNameTypeAs,
-        model_owner: ModelOwnerTypeAs,
-        model_version: ModelVersionTypeAs,
+        history: t.ChatHistoryTypeAs,
+        provider: t.ProviderTypeAs,
+        model_name: t.ModelNameTypeAs,
+        model_owner: t.ModelOwnerTypeAs,
+        model_version: t.ModelVersionTypeAs,
     ):
         super().__init__(
             philosopher=None,
@@ -200,18 +180,14 @@ class AssistantChatbot(Chatbot):
         )
         return history_str
 
-    def summarize_responses(
-        self,
-        language: LanguageTypeAs,
-    ) -> str:
+    def summarize_responses(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
-            input=self.history_str, language=language, callbacks=self.callbacks
+            input=self.history_str,
+            language=language,
+            callbacks=self.callbacks,
         )
 
-    def summary_table(
-        self,
-        language: LanguageTypeAs,
-    ) -> str:
+    def summary_table(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
             "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
