@@ -52,7 +52,8 @@ class APIManager:
 
         if self.model_experimental:
             st.info(
-                f"Caution: `{self.chosen_model}` is still in experimentation", icon="⚠️"
+                f"Caution: `{self.chosen_model}` support is still experimental",
+                icon="⚠️",
             )
 
     def default_api_key(self):
