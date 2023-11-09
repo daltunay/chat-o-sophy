@@ -60,7 +60,7 @@ def main():
     )
 
     if not authentificated:
-        st.error("Configure LLM in left sidebar to unlock selection", icon="🔒")
+        st.error("Configure model in left sidebar to unlock selection", icon="🔒")
         return
     elif not current_choice:
         st.info("Select a philosopher in the above menu", icon="ℹ️")
