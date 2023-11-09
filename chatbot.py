@@ -16,7 +16,6 @@ from langchain.schema.messages import AIMessage, HumanMessage
 
 from utils.streaming import CustomStreamingCallbackHandlers
 
-
 BotTypeAs = Literal["philosopher", "assistant"]
 PhilosopherTypeAs = str
 ProviderTypeAs = Literal["openai", "replicate"]
