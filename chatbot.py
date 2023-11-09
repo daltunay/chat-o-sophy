@@ -36,10 +36,6 @@ class Chatbot:
         self.model_version = model_version
 
     @cached_property
-    def avatar(self) -> str:
-        return f"philosophers/{self.philosopher.lower().replace(' ', '_')}.jpeg"
-
-    @cached_property
     def template(self) -> ChatPromptTemplate:
         if self.bot_type == "assistant":
             system_message = (

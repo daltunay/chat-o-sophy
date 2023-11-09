@@ -1,6 +1,5 @@
-import os
-
 import streamlit as st
+import yaml
 
 from chatbot import PhilosopherChatbot
 from sidebar import Sidebar
@@ -8,20 +7,16 @@ from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-st.set_page_config(page_title="chat-o-sophy - single mode", page_icon="💭")
+st.set_page_config(page_title="chat-o-sophy - multi mode", page_icon="💭")
+
+with open("philosophers.yaml") as f:
+    PHILOSOPHERS = yaml.safe_load(f)
 
 
-PHILOSOPHERS = [
-    os.path.splitext(filename)[0].replace("_", " ").title()
-    for filename in os.listdir("philosophers")
-]
-
-
-def display_chat_history(chatbot):
+def display_chat_history(chatbot, avatar):
     for message in chatbot.history:
         role, content = message["role"], message["content"]
-        avatar = chatbot.avatar if role == "ai" else None
-        st.chat_message(role, avatar=avatar).markdown(content)
+        st.chat_message(role, avatar=avatar if role == "ai" else None).markdown(content)
 
 
 def initialize_chatbot(model_name, model_provider, model_owner, model_version):
@@ -51,7 +46,7 @@ def main():
     current_choice = st.selectbox(
         label="Philosopher:",
         placeholder="Choose one philosopher",
-        options=PHILOSOPHERS,
+        options=PHILOSOPHERS.keys(),
         index=None,
         key="current_choice",
         disabled=not authentificated,
@@ -67,15 +62,16 @@ def main():
     if not authentificated:
         st.error("Configure LLM in left sidebar to unlock selection", icon="🔒")
         return
-    elif authentificated and not current_choice:
+    elif not current_choice:
         st.info("Select a philosopher in the above menu", icon="ℹ️")
         return
 
     if chatbot := st.session_state.get("chatbot"):
-        display_chat_history(chatbot)
+        avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+        display_chat_history(chatbot, avatar)
 
         if chatbot.history == []:
-            with st.chat_message("ai", avatar=chatbot.avatar):
+            with st.chat_message("ai", avatar=avatar):
                 chatbot.greet(language=selected_language)
 
         if prompt := st.chat_input(
@@ -83,7 +79,7 @@ def main():
             disabled=not (current_choice and authentificated),
         ):
             st.chat_message("human").markdown(prompt)
-            with st.chat_message("ai", avatar=chatbot.avatar):
+            with st.chat_message("ai", avatar=avatar):
                 chatbot.chat(prompt, language=selected_language)
 
 

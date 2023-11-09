@@ -1,6 +1,7 @@
 import os
 
 import streamlit as st
+import yaml
 
 from chatbot import AssistantChatbot, PhilosopherChatbot
 from sidebar import Sidebar
@@ -10,11 +11,8 @@ logger = configure_logger(__file__)
 
 st.set_page_config(page_title="chat-o-sophy - multi mode", page_icon="💭")
 
-
-PHILOSOPHERS = [
-    os.path.splitext(filename)[0].replace("_", " ").title()
-    for filename in os.listdir("philosophers")
-]
+with open("philosophers.yaml") as f:
+    PHILOSOPHERS = yaml.safe_load(f)
 
 
 def initialize_chatbot(model_name, model_provider, model_owner, model_version):
@@ -45,7 +43,7 @@ def main():
     current_choices = st.multiselect(
         label="Philosophers:",
         placeholder="Choose several philosophers",
-        options=PHILOSOPHERS,
+        options=PHILOSOPHERS.keys(),
         max_selections=5,
         default=None,
         disabled=not authentificated,
