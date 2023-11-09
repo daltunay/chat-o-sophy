@@ -9,9 +9,7 @@ class Sidebar:
         self.language_manager = LanguageManager()
         self.api_manager = APIManager()
 
-    def show(self, show_language=True, show_api=True):
+    def show(self):
         with st.sidebar:
-            if show_language:
-                self.language_manager.main()
-            if show_api:
-                self.api_manager.main()
+            self.language_manager.main()
+            self.api_manager.main()
