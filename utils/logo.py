@@ -1,7 +1,6 @@
 import os
 import random
 
-
 import openai
 import requests
 import streamlit as st
