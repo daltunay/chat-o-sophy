@@ -41,16 +41,19 @@ class APIManager:
             index=list(MODELS.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
-            help="Streaming output is currently only supported on `gpt-3.5-turbo`",
+            help="Recommended: `gpt-3.5-turbo`",
             on_change=self.reset_state,
         )
 
         self.model_provider = MODELS[self.chosen_model]["model_provider"]
         self.model_owner = MODELS[self.chosen_model]["model_owner"]
         self.model_version = MODELS[self.chosen_model]["model_version"]
+        self.model_experimental = MODELS[self.chosen_model]["model_experimental"]
 
-        if self.chosen_model in ("mistral-7b-instruct-v0.1", "llama-2-7b-chat"):
-            st.info(f"`{self.chosen_model}` is in experimental mode", icon="⚠️")
+        if self.model_experimental:
+            st.info(
+                f"Caution: `{self.chosen_model}` is still in experimentation", icon="⚠️"
+            )
 
     def default_api_key(self):
         self.api_keys[self.model_provider]["default"] = st.checkbox(
