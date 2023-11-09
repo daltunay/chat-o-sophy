@@ -23,7 +23,9 @@ class APIManager:
         self.authentificated = False
         self.api_keys = {
             model_provider: {"api_key": "", "default": True}
-            for model_provider in {model_info["model_provider"] for model_info in MODELS.values()}
+            for model_provider in {
+                model_info["model_provider"] for model_info in MODELS.values()
+            }
         }
 
     def choose_model(self):
@@ -34,8 +36,8 @@ class APIManager:
             index=list(MODELS.keys()).index(
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
-            on_change=logger.info,
-            kwargs={"msg": "Switching model"},
+            on_change=self.__setattr__,
+            args=("authentificated", False),
         )
 
         self.model_provider = MODELS[self.chosen_model]["model_provider"]
@@ -50,8 +52,8 @@ class APIManager:
                 "api_manager.default", self.api_keys[self.model_provider]["default"]
             ),
             help="Use the provided default API key, if you don't have any",
-            on_change=logger.info,
-            kwargs={"msg": "Switching default API usage"},
+            on_change=self.__setattr__,
+            args=("authentificated", False),
         )
 
         if self.api_keys[self.model_provider]["default"]:
@@ -113,16 +115,17 @@ class APIManager:
         elif model_provider == "replicate":
             success = self.authenticate_replicate(api_key, model_owner, model_name)
 
-        if success:  # TODO: FIX
-            logger.info("Authentification successful")
-            st.toast(f"API Authentication successful — {provider_label}", icon="✅")
-            os.environ[provider_env_var] = api_key
-            self.authentificated = True
-        elif not success:
-            logger.info("Authentification failed")
-            st.toast(f"API Authentication failed — {provider_label}", icon="🚫")
-            os.environ.pop(provider_env_var, None)
-            self.authentificated = False
+        if not self.authentificated:
+            if success:
+                logger.info("Authentification successful")
+                st.toast(f"API Authentication successful — {provider_label}", icon="✅")
+                os.environ[provider_env_var] = api_key
+                self.authentificated = True
+            else:
+                logger.info("Authentification failed")
+                st.toast(f"API Authentication failed — {provider_label}", icon="🚫")
+                os.environ.pop(provider_env_var, None)
+                self.authentificated = False
 
     @staticmethod
     @st.cache_data(show_spinner=False)
