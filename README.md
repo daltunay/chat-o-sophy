@@ -68,4 +68,11 @@ docker build -t chat-o-sophy .
 docker run -p 8501:8501 chat-o-sophy
 ```
 
+Alternatively, you can just run the following:
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
 Once the application is running, it will be accessible at http://localhost:8501 in your web browser.
