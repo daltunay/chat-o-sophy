@@ -8,7 +8,7 @@ from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-st.set_page_config(page_title="chat-o-sophy - mutli mode", page_icon="💭")
+st.set_page_config(page_title="chat-o-sophy - multi mode", page_icon="💭")
 
 
 PHILOSOPHERS = [
@@ -29,7 +29,7 @@ def initialize_chatbot(model_name, model_provider, model_owner, model_version):
 
 
 def main():
-    st.title("Single mode", anchor=False)
+    st.title("Multi mode", anchor=False)
     st.caption("Chat with the philosopher of your choice!")
 
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
