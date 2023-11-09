@@ -27,10 +27,11 @@ class APIManager:
                 model_info["model_provider"] for model_info in MODELS.values()
             }
         }
-    
+
     def reset_state(self):
         self.authentificated = False
         st.session_state.chatbot = None
+        st.session_state.current_choice = None
 
     def choose_model(self):
         self.chosen_model = st.selectbox(
@@ -41,7 +42,7 @@ class APIManager:
                 st.session_state.get("api_manager.chosen_model", self.chosen_model)
             ),
             help="Streaming output is currently only supported on gpt-3.5-turbo",
-            on_change=self.reset_state
+            on_change=self.reset_state,
         )
 
         self.model_provider = MODELS[self.chosen_model]["model_provider"]
@@ -56,7 +57,7 @@ class APIManager:
                 "api_manager.default", self.api_keys[self.model_provider]["default"]
             ),
             help="Use the provided default API key, if you don't have any",
-            on_change=self.reset_state
+            on_change=self.reset_state,
         )
 
         if self.api_keys[self.model_provider]["default"]:
