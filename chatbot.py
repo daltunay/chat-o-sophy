@@ -6,9 +6,12 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 import utils.typing as t
@@ -74,17 +77,15 @@ class Chatbot:
 
     @cached_property
     def llm(self) -> BaseChatModel:
-        llm_parameters = {"temperature": 1.0, "top_p": 1.0, "max_length": 4096}
         if self.model_provider == "openai":
             return ChatOpenAI(
                 model=self.model_name,
                 streaming=True,
-                model_kwargs=llm_parameters,
             )
         elif self.model_provider == "replicate":
             return Replicate(
                 model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
-                model_kwargs=llm_parameters,
+                model_kwargs={"max_length": 4096},
             )
 
     @cached_property
