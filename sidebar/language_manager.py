@@ -17,6 +17,10 @@ class LanguageManager:
         self.languages = LANGUAGES
         self.selected_language = default_language
 
+    def reset_state(self):
+        st.session_state.chatbot = None
+        st.session_state.current_choice = None
+
     def choose_language(self):
         self.selected_language = st.selectbox(
             label="Select chat language:",
@@ -28,8 +32,7 @@ class LanguageManager:
                 )
             ),
             help="Changes the chat language only, not the interface language",
-            on_change=logger.info,
-            kwargs={"msg": "Switching languages"},
+            on_change=self.reset_state,
         )
 
     def main(self):
