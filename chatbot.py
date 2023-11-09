@@ -17,11 +17,6 @@ from langchain.schema.messages import AIMessage, HumanMessage
 from utils.streaming import CustomStreamingCallbackHandlers
 
 
-class ChatHistory(TypedDict):
-    role: Literal["ai", "human"]
-    content: str
-
-
 class Chatbot:
     def __init__(
         self,
@@ -31,7 +26,7 @@ class Chatbot:
         model_name: str,
         model_owner: Optional[str],
         model_version: Optional[str],
-    ):
+    ) -> None:
         self.bot_type = bot_type
         self.philosopher = philosopher
         self.provider = provider
@@ -40,11 +35,11 @@ class Chatbot:
         self.model_version = model_version
 
     @cached_property
-    def avatar(self):
+    def avatar(self) -> str:
         return f"philosophers/{self.philosopher.lower().replace(' ', '_')}.jpeg"
 
     @cached_property
-    def template(self):
+    def template(self) -> ChatPromptTemplate:
         if self.bot_type == "assistant":
             system_message = (
                 "You are an assistant, of whom the purpose will be to summarize some philosophers' responses to a user question. "
@@ -116,7 +111,7 @@ class PhilosopherChatbot(Chatbot):
         model_name: str,
         model_owner: Optional[str],
         model_version: Optional[str],
-    ):
+    ) -> None:
         super().__init__(
             bot_type="philosopher",
             provider=provider,
@@ -127,15 +122,20 @@ class PhilosopherChatbot(Chatbot):
         )
         self.history = []
 
-    def greet(self, language: Literal["English", "French", "German", "Spanish"]):
+    def greet(
+        self,
+        language: Literal["English", "French", "German", "Spanish"],
+    ) -> str:
         return self.chat(
             prompt="I am your guest. Please present yourself, and greet me.",
             language=language,
         )
 
     def chat(
-        self, prompt: str, language: Literal["English", "French", "German", "Spanish"]
-    ):
+        self,
+        prompt: str,
+        language: Literal["English", "French", "German", "Spanish"],
+    ) -> str:
         response = self.chain.run(
             input=prompt,
             philosopher=self.philosopher,
@@ -145,7 +145,7 @@ class PhilosopherChatbot(Chatbot):
         self.update_history()
         return response
 
-    def update_history(self):
+    def update_history(self) -> None:
         self.history = []
         for message in self.memory.chat_memory.messages[1:]:
             if isinstance(message, AIMessage):
@@ -157,7 +157,9 @@ class PhilosopherChatbot(Chatbot):
 class AssistantChatbot(Chatbot):
     def __init__(
         self,
-        history: ChatHistory,
+        history: List[
+            TypedDict("ChatHistory", {"role": Literal["ai", "human"], "content": str})
+        ],
         provider: Literal["openai", "replicate"],
         model_name: str,
         model_owner: Optional[str],
@@ -174,7 +176,7 @@ class AssistantChatbot(Chatbot):
         self.history = history
 
     @property
-    def history_str(self):
+    def history_str(self) -> str:
         history_str = f"Question: {self.history[0]['content']}\n\n"
         history_str += "\n\n".join(
             [
@@ -187,15 +189,17 @@ class AssistantChatbot(Chatbot):
         return history_str
 
     def summarize_responses(
-        self, language: Literal["English", "French", "German", "Spanish"]
-    ):
+        self,
+        language: Literal["English", "French", "German", "Spanish"],
+    ) -> str:
         return self.chain.run(
             input=self.history_str, language=language, callbacks=self.callbacks
         )
 
     def summary_table(
-        self, language: Literal["English", "French", "German", "Spanish"]
-    ):
+        self,
+        language: Literal["English", "French", "German", "Spanish"],
+    ) -> str:
         return self.chain.run(
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
             "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
