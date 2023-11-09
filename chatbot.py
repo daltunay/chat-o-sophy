@@ -23,14 +23,14 @@ class Chatbot:
         self,
         bot_type: t.BotTypeAs,
         philosopher: t.PhilosopherTypeAs,
-        provider: t.ProviderTypeAs,
+        model_provider: t.ProviderTypeAs,
         model_name: t.ModelNameTypeAs,
         model_owner: t.ModelOwnerTypeAs,
         model_version: t.ModelVersionTypeAs,
     ) -> None:
         self.bot_type = bot_type
         self.philosopher = philosopher
-        self.provider = provider
+        self.model_provider = model_provider
         self.model_name = model_name
         self.model_owner = model_owner
         self.model_version = model_version
@@ -81,12 +81,12 @@ class Chatbot:
 
     @cached_property
     def llm(self) -> BaseChatModel:
-        if self.provider == "openai":
+        if self.model_provider == "openai":
             return ChatOpenAI(
                 model=self.model_name,
                 streaming=True,
             )
-        elif self.provider == "replicate":
+        elif self.model_provider == "replicate":
             return Replicate(
                 model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
             )
@@ -105,14 +105,14 @@ class PhilosopherChatbot(Chatbot):
     def __init__(
         self,
         philosopher: t.PhilosopherTypeAs,
-        provider: t.ProviderTypeAs,
+        model_provider: t.ProviderTypeAs,
         model_name: t.ModelNameTypeAs,
         model_owner: t.ModelOwnerTypeAs,
         model_version: t.ModelVersionTypeAs,
     ) -> None:
         super().__init__(
             bot_type="philosopher",
-            provider=provider,
+            model_provider=model_provider,
             philosopher=philosopher,
             model_name=model_name,
             model_owner=model_owner,
@@ -149,14 +149,14 @@ class AssistantChatbot(Chatbot):
     def __init__(
         self,
         history: t.ChatHistoryTypeAs,
-        provider: t.ProviderTypeAs,
+        model_provider: t.ProviderTypeAs,
         model_name: t.ModelNameTypeAs,
         model_owner: t.ModelOwnerTypeAs,
         model_version: t.ModelVersionTypeAs,
     ):
         super().__init__(
             philosopher=None,
-            provider=provider,
+            model_provider=model_provider,
             bot_type="assistant",
             model_name=model_name,
             model_owner=model_owner,

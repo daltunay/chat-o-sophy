@@ -24,10 +24,10 @@ def display_chat_history(chatbot):
         st.chat_message(role, avatar=avatar).markdown(content)
 
 
-def initialize_chatbot(model_name, provider, model_owner, model_version):
+def initialize_chatbot(model_name, model_provider, model_owner, model_version):
     st.session_state.chatbot = PhilosopherChatbot(
         philosopher=st.session_state.current_choice,
-        provider=provider,
+        model_provider=model_provider,
         model_name=model_name,
         model_owner=model_owner,
         model_version=model_version,
@@ -42,7 +42,7 @@ def main():
     sidebar.show()
 
     authentificated = sidebar.api_manager.authentificated
-    provider = sidebar.api_manager.provider
+    model_provider = sidebar.api_manager.model_provider
     chosen_model = sidebar.api_manager.chosen_model
     model_owner = sidebar.api_manager.model_owner
     model_version = sidebar.api_manager.model_version
@@ -58,7 +58,7 @@ def main():
         on_change=initialize_chatbot,
         kwargs={
             "model_name": chosen_model,
-            "provider": provider,
+            "model_provider": model_provider,
             "model_owner": model_owner,
             "model_version": model_version,
         },
