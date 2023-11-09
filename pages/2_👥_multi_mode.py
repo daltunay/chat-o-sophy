@@ -69,7 +69,8 @@ def main():
                 model_owner=model_owner,
                 model_version=model_version,
             )
-            with st.chat_message("ai", avatar=chatbot.avatar):
+            avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+            with st.chat_message("ai", avatar=avatar):
                 answer = chatbot.chat(prompt=prompt, language=selected_language)
                 history.append({"role": philosopher, "content": answer})
 
