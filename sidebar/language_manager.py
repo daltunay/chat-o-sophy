@@ -27,7 +27,7 @@ class LanguageManager:
                     "language_manager.selected_language", self.selected_language
                 )
             ),
-            help="Non English languages may only work with `gpt-3.5-turbo`",
+            help="Changes the chat language only, not the interface language",
             on_change=logger.info,
             kwargs={"msg": "Switching languages"},
         )
