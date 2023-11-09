@@ -71,8 +71,9 @@ def main():
             )
             avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
             with st.chat_message("ai", avatar=avatar):
-                answer = chatbot.chat(prompt=prompt, language=selected_language)
-                history.append({"role": philosopher, "content": answer})
+                with st.spinner(f"{chatbot.philosopher} is writing..."):
+                    answer = chatbot.chat(prompt=prompt, language=selected_language)
+                    history.append({"role": philosopher, "content": answer})
 
         st.header(
             "Synthesis",

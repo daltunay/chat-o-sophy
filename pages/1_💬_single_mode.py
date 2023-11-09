@@ -72,7 +72,8 @@ def main():
 
         if chatbot.history == []:
             with st.chat_message("ai", avatar=avatar):
-                chatbot.greet(language=selected_language)
+                with st.spinner(f"{current_choice} is writing..."):
+                    chatbot.greet(language=selected_language)
 
         if prompt := st.chat_input(
             placeholder="What do you want to know?",
@@ -80,7 +81,8 @@ def main():
         ):
             st.chat_message("human").markdown(prompt)
             with st.chat_message("ai", avatar=avatar):
-                chatbot.chat(prompt, language=selected_language)
+                with st.spinner(f"{current_choice} is writing..."):
+                    chatbot.chat(prompt, language=selected_language)
 
 
 if __name__ == "__main__":
