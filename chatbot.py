@@ -74,14 +74,17 @@ class Chatbot:
 
     @cached_property
     def llm(self) -> BaseChatModel:
+        llm_parameters = {"temperature": 1.0, "top_p": 1.0, "max_length": 4096}
         if self.model_provider == "openai":
             return ChatOpenAI(
                 model=self.model_name,
                 streaming=True,
+                model_kwargs=llm_parameters,
             )
         elif self.model_provider == "replicate":
             return Replicate(
                 model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
+                model_kwargs=llm_parameters,
             )
 
     @cached_property
