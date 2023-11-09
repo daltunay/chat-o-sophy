@@ -166,16 +166,12 @@ class AssistantChatbot(Chatbot):
 
     @property
     def history_str(self) -> str:
-        history_str = f"Question: {self.history[0]['content']}\n\n"
-        history_str += "\n\n".join(
-            [
-                f"\t{message['role']}'s response: {message['content']}".replace(
-                    "\n", " "
-                )
-                for message in self.history[1:]
-            ]
-        )
-        return history_str
+        history_str = [f"Question: {self.history[0]['content']}"]
+        for message in self.history[1:]:
+            content = " ".join(message["content"].split("\n"))
+            response = f"\t{message['role']}'s response: {content}"
+            history_str.append(response)
+        return "\n\n".join(history_str)
 
     def summarize_responses(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(

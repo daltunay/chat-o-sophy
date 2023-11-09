@@ -65,7 +65,7 @@ def main():
         st.chat_message("human").markdown(prompt)
         history = [{"role": "human", "content": prompt}]
         for philosopher in current_choices:
-            st.header(philosopher, divider="gray", anchor=False)
+            st.header(f"{philosopher}'s answer", divider="gray", anchor=False)
             chatbot = PhilosopherChatbot(
                 philosopher=philosopher,
                 provider=provider,
