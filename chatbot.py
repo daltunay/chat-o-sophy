@@ -17,15 +17,30 @@ from langchain.schema.messages import AIMessage, HumanMessage
 from utils.streaming import CustomStreamingCallbackHandlers
 
 
+BotTypeAs = Literal["philosopher", "assistant"]
+PhilosopherTypeAs = str
+ProviderTypeAs = Literal["openai", "replicate"]
+ModelNameTypeAs = Literal[
+    "gpt-3.5-turbo",
+    "mistral-7b-instruct-v0.1",
+    "llama-2-7b-chat",
+]
+LanguageTypeAs = Literal["English", "French", "German", "Spanish"]
+ModelOwnerTypeAs = Optional[Literal["mistralai", "meta"]]
+ModelVersionTypeAs = Optional[str]
+RoleTypeAs = Literal["ai", "human"]
+ChatHistoryTypeAs = List[TypedDict("ChatHistory", {"role": RoleTypeAs, "content": str})]
+
+
 class Chatbot:
     def __init__(
         self,
-        bot_type: Literal["philosopher", "assistant"],
-        philosopher: str,
-        provider: Literal["openai", "replicate"],
-        model_name: str,
-        model_owner: Optional[str],
-        model_version: Optional[str],
+        bot_type: BotTypeAs,
+        philosopher: PhilosopherTypeAs,
+        provider: ProviderTypeAs,
+        model_name: ModelNameTypeAs,
+        model_owner: ModelOwnerTypeAs,
+        model_version: ModelVersionTypeAs,
     ) -> None:
         self.bot_type = bot_type
         self.philosopher = philosopher
@@ -106,11 +121,11 @@ class Chatbot:
 class PhilosopherChatbot(Chatbot):
     def __init__(
         self,
-        philosopher: str,
-        provider: Literal["openai", "replicate"],
-        model_name: str,
-        model_owner: Optional[str],
-        model_version: Optional[str],
+        philosopher: PhilosopherTypeAs,
+        provider: ProviderTypeAs,
+        model_name: ModelNameTypeAs,
+        model_owner: ModelOwnerTypeAs,
+        model_version: ModelVersionTypeAs,
     ) -> None:
         super().__init__(
             bot_type="philosopher",
@@ -124,7 +139,7 @@ class PhilosopherChatbot(Chatbot):
 
     def greet(
         self,
-        language: Literal["English", "French", "German", "Spanish"],
+        language: LanguageTypeAs,
     ) -> str:
         return self.chat(
             prompt="I am your guest. Please present yourself, and greet me.",
@@ -134,7 +149,7 @@ class PhilosopherChatbot(Chatbot):
     def chat(
         self,
         prompt: str,
-        language: Literal["English", "French", "German", "Spanish"],
+        language: LanguageTypeAs,
     ) -> str:
         response = self.chain.run(
             input=prompt,
@@ -157,13 +172,11 @@ class PhilosopherChatbot(Chatbot):
 class AssistantChatbot(Chatbot):
     def __init__(
         self,
-        history: List[
-            TypedDict("ChatHistory", {"role": Literal["ai", "human"], "content": str})
-        ],
-        provider: Literal["openai", "replicate"],
-        model_name: str,
-        model_owner: Optional[str],
-        model_version: Optional[str],
+        history: ChatHistoryTypeAs,
+        provider: ProviderTypeAs,
+        model_name: ModelNameTypeAs,
+        model_owner: ModelOwnerTypeAs,
+        model_version: ModelVersionTypeAs,
     ):
         super().__init__(
             philosopher=None,
@@ -190,7 +203,7 @@ class AssistantChatbot(Chatbot):
 
     def summarize_responses(
         self,
-        language: Literal["English", "French", "German", "Spanish"],
+        language: LanguageTypeAs,
     ) -> str:
         return self.chain.run(
             input=self.history_str, language=language, callbacks=self.callbacks
@@ -198,7 +211,7 @@ class AssistantChatbot(Chatbot):
 
     def summary_table(
         self,
-        language: Literal["English", "French", "German", "Spanish"],
+        language: LanguageTypeAs,
     ) -> str:
         return self.chain.run(
             input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
