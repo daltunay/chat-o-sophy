@@ -12,6 +12,7 @@ watchdog = "^3.0.0"
 langchain = "^0.0.323"
 openai = "^0.28.1"
 replicate = "^0.15.5"
+types-requests = "^2.31.0.10"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.3"
