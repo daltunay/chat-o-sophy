@@ -10,8 +10,6 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 
 def main():
-    logger.info("Running home")
-
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
     sidebar.show()
 

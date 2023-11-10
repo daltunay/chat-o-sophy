@@ -127,12 +127,10 @@ class APIManager:
 
         if not self.authentificated:
             if success:
-                logger.info("Authentification successful")
                 st.toast(f"API Authentication successful — {provider_label}", icon="✅")
                 os.environ[provider_env_var] = api_key
                 self.authentificated = True
             else:
-                logger.info("Authentification failed")
                 st.toast(f"API Authentication failed — {provider_label}", icon="🚫")
                 os.environ.pop(provider_env_var, None)
                 self.authentificated = False
@@ -140,7 +138,6 @@ class APIManager:
     @staticmethod
     @st.cache_data(show_spinner=False)
     def authenticate_openai(api_key, model_name):
-        logger.info(msg="Requesting OpenAI API")
         response = requests.get(
             url=f"https://api.openai.com/v1/models/{model_name}",
             headers={"Authorization": f"Bearer {api_key}"},
@@ -150,7 +147,6 @@ class APIManager:
     @staticmethod
     @st.cache_data(show_spinner=False)
     def authenticate_replicate(api_key, model_owner, model_name):
-        logger.info(msg="Requesting Replicate API")
         response = requests.get(
             url=f"https://api.replicate.com/v1/models/{model_owner}/{model_name}",
             headers={"Authorization": f"Token {api_key}"},
