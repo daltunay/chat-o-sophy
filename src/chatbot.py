@@ -14,7 +14,7 @@ from langchain.prompts import (
 )
 from langchain.schema.messages import AIMessage, HumanMessage
 
-import utils.types as t
+import utils.type_as as t
 from .streaming import CustomStreamingCallbackHandlers
 
 
