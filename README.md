@@ -2,7 +2,7 @@
 
 **Chat with your favorite philosophers!**
 
-Access live deployed app here: https://chat-o-sophy.streamlit.app/
+Access live deployed app here: **https://chat-o-sophy.streamlit.app/**
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ poetry install --no-root
 
 This command will create a virtual environment and install the necessary dependencies.
 
-## (Optional) Setting up a default OpenAI API Key
+## (Optional) Setting up default API Keys
 
 The application lets the user decide whether to use their own API keys or the default one.  
 You can specifiy the default keys in `.streamlit/secrets.toml`: 
@@ -42,6 +42,9 @@ key="<OPENAI_API_KEY>"
 [replicate_api]
 key="<REPLICATE_API_TOKEN>"
 ```
+
+The default OpenAI key is used for the logo generation, as well as the `gpt-3.5-turbo` model if the default checkbox is ticked.  
+The default Replicate key is used for the `llama-2-7b-chat` and `mistral-7b-instruct-v0.1` models if the default checkbox is ticked.
 
 ## Running the Application
 The _chat-o-sophy_ application can be run using either Poetry or Docker.
