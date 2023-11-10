@@ -6,7 +6,7 @@ Access live deployed app here: **https://chat-o-sophy.streamlit.app/**
 
 ## Prerequisites
 
-Poetry: If Poetry is not installed, you can do so using pip:
+If [Poetry](https://python-poetry.org/) is not installed, you can do so using pip:
 
 
 ```bash
