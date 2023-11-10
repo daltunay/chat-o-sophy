@@ -6,12 +6,14 @@ Access live deployed app here: **https://chat-o-sophy.streamlit.app/**
 
 ## Prerequisites
 
-If [Poetry](https://python-poetry.org/) is not installed, you can do so using pip:
+**Poetry**: If [Poetry](https://python-poetry.org/) is not installed, you can do so using pip:
 
 
 ```bash
 pip install poetry
 ```
+
+**Docker**: If [Docker](https://www.docker.com/) is not installed, you can do so following [this link](https://docs.docker.com/get-docker/)
 
 ## Installation
 
