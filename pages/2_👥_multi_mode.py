@@ -88,8 +88,10 @@ def main():
             model_owner=model_owner,
             model_version=model_version,
         )
-        assistant.summarize_responses(language=selected_language)
-        assistant.summary_table(language=selected_language)
+        with st.spinner("Assistant is summarizing the reponses..."):
+            assistant.summarize_responses(language=selected_language)
+        with st.spinner("Assistant is generating a summary table..."):
+            assistant.summary_table(language=selected_language)
 
 
 if __name__ == "__main__":
