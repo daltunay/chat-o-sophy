@@ -82,8 +82,7 @@ def main():
             label="New logo",
             use_container_width=True,
             on_click=new_logo.clear,
-            help="Switches to an already existing logo (90% proba.), "
-            "or creates a new one using the OpenAI API (10% proba.)",
+            help="Randomly switches to another logo (90%) or creates a new one via OpenAI API (10%)",
         )
 
 
