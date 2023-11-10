@@ -1,10 +1,8 @@
 __pycache__/
-*.pem
-*.ruff_cache/
-.mypy_cache/
-.streamlit/secrets.toml
-pages/session_state.py
-test.ipynb
-test.py
 .DS_store
+.mypy_cache/
+.ruff_cache/
+.streamlit/secrets.toml
+*.pem
 *.pyc
+test.ipynb
