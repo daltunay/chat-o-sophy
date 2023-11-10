@@ -1,8 +1,8 @@
 import streamlit as st
 
-from sidebar import Sidebar
+from src.logo import new_logo
+from src.sidebar import Sidebar
 from utils.logging import configure_logger
-from .logo import new_logo
 
 logger = configure_logger(__file__)
 

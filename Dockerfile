@@ -6,8 +6,8 @@ COPY . /app
 
 RUN pip install "poetry==1.7.0" \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-root --no-interaction --no-cache
+    && poetry install --no-interaction --no-dev --no-cache
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "Home.py"]
+CMD ["streamlit", "run", "src/Home.py"]

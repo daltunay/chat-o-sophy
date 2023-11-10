@@ -1,8 +1,8 @@
 import streamlit as st
 import yaml
 
-from chatbot import AssistantChatbot, PhilosopherChatbot
-from sidebar import Sidebar
+from src.chatbot import AssistantChatbot, PhilosopherChatbot
+from src.sidebar import Sidebar
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
