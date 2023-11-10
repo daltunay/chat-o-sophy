@@ -7,3 +7,4 @@ pages/session_state.py
 test.ipynb
 test.py
 .DS_store
+*.pyc

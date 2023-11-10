@@ -1,0 +1,9 @@
+openai:
+  label: OpenAI
+  api_help: https://platform.openai.com/account/api-keys
+  env_var: OPENAI_API_KEY
+
+replicate:
+  label: Replicate
+  api_help: https://replicate.com/account/api-tokens
+  env_var: REPLICATE_API_TOKEN

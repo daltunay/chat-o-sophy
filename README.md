@@ -77,7 +77,7 @@ Alternatively, you can just run the following:
 
 ```bash
 chmod +x run.sh
-./run.sh
+./bin/run.sh
 ```
 
 Once the application is running, it will be accessible at http://localhost:8501 in your web browser.

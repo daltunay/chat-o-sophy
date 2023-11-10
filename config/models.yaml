@@ -1,0 +1,18 @@
+gpt-3.5-turbo:
+  model_provider: openai
+  model_owner: null
+  model_version: null
+  model_experimental: false
+
+mistral-7b-instruct-v0.1:
+  model_provider: replicate
+  model_owner: mistralai
+  model_version: 83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70
+  model_experimental: true
+
+llama-2-7b-chat:
+  model_provider: replicate
+  model_owner: meta
+  model_version: 13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0
+  model_experimental: true
+

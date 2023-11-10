@@ -9,11 +9,10 @@ from utils.logging import configure_logger
 logger = configure_logger(__file__)
 
 
-with open("model_providers.yaml") as f:
-    model_providers = yaml.safe_load(f)
-
-MODELS = model_providers["MODELS"]
-PROVIDERS = model_providers["PROVIDERS"]
+with open("config/models.yaml") as f:
+    MODELS = yaml.safe_load(f)
+with open("config/providers.yaml") as f:
+    PROVIDERS = yaml.safe_load(f)
 
 
 class APIManager:

@@ -9,7 +9,7 @@ logger = configure_logger(__file__)
 
 st.set_page_config(page_title="chat-o-sophy - multi mode", page_icon="💭")
 
-with open("philosophers.yaml") as f:
+with open("data/philosophers.yaml") as f:
     PHILOSOPHERS = yaml.safe_load(f)
 
 
@@ -69,7 +69,7 @@ def main():
                 model_owner=model_owner,
                 model_version=model_version,
             )
-            avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+            avatar = f"static/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
             with st.chat_message("ai", avatar=avatar):
                 with st.spinner(f"{chatbot.philosopher} is writing..."):
                     answer = chatbot.chat(prompt=prompt, language=selected_language)

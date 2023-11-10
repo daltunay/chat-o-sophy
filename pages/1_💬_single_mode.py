@@ -9,7 +9,7 @@ logger = configure_logger(__file__)
 
 st.set_page_config(page_title="chat-o-sophy - multi mode", page_icon="💭")
 
-with open("philosophers.yaml") as f:
+with open("data/philosophers.yaml") as f:
     PHILOSOPHERS = yaml.safe_load(f)
 
 
@@ -67,7 +67,7 @@ def main():
         return
 
     if chatbot := st.session_state.get("chatbot"):
-        avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+        avatar = f"static/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
         display_chat_history(chatbot, avatar)
 
         if chatbot.history == []:
