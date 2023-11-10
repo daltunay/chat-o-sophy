@@ -31,10 +31,10 @@ class LanguageManager:
                     "language_manager.selected_language", self.selected_language
                 )
             ),
-            help="Changes the chat language only, not the interface language",
+            help="Changes the **chat language only**, not the interface language",
             on_change=self.reset_state,
         )
 
     def main(self):
-        st.header("Chat Language", divider="gray")
+        st.header("Language", divider="gray")
         self.choose_language()

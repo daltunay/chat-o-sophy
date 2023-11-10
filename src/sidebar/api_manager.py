@@ -162,7 +162,7 @@ class APIManager:
             st.info(f"Please configure the {provider_label} API above", icon="🔐")
 
     def main(self):
-        st.header("Model Selection", divider="gray")
+        st.header("Model", divider="gray")
         self.choose_model()
         self.default_api_key()
         self.api_key_form()
