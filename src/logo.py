@@ -23,11 +23,9 @@ def generate_new_logo():
     )
     response = requests.get(image["data"][0]["url"])
     if response.ok:
-        max_idx = max(
-            int(f.split("_")[-1].split(".")[0]) for f in os.listdir(LOGOS_DIR)
-        )
+        idx = max(int(f.split("_")[-1].split(".")[0]) for f in os.listdir(LOGOS_DIR))
         logo_path = os.path.join(
-            LOGOS_DIR, f"generated_logo_{str(max_idx + 1).zfill(2)}.png"
+            LOGOS_DIR, f"generated_logo_{str(idx + 1).zfill(2)}.png"
         )
         with open(logo_path, "wb") as f:
             f.write(response.content)
