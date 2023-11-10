@@ -2,7 +2,7 @@ import streamlit as st
 
 from sidebar import Sidebar
 from utils.logging import configure_logger
-from utils.logo import new_logo
+from .logo import new_logo
 
 logger = configure_logger(__file__)
 

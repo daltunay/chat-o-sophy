@@ -6,13 +6,16 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
-import utils.typing as t
-from utils.streaming import CustomStreamingCallbackHandlers
+import utils.types as t
+from .streaming import CustomStreamingCallbackHandlers
 
 
 class Chatbot:
