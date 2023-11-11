@@ -26,7 +26,7 @@ def initialize_chatbot(model_name, model_provider, model_owner, model_version):
 
 def main():
     st.title("Multi mode", anchor=False)
-    st.caption("Chat with the philosopher of your choice!")
+    st.caption("Ask a question to several philosophers of your choice!")
 
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
     sidebar.show()
