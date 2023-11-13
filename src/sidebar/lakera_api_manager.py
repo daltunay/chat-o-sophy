@@ -43,7 +43,8 @@ class LakeraAPIManager:
         else:
             api_key = self.api_key["api_key"]
 
-        self.authentificate(api_key=api_key)
+        if self.activated:
+            self.authentificate(api_key=api_key)
 
     def api_key_form(self):
         with st.form("lakera_gard_api"):
