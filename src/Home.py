@@ -24,10 +24,11 @@ def main():
             """
         _chat-o-sophy_ lets you engage in enlightening conversations with famous philosophers.
         
-        Choose from two modes:
-        - **[single mode](single_mode)**: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
-        - **[multi mode](multi_mode)**: ask a question and get answers from multiple philosophers, gaining a well-rounded perspective.
-        """
+        Choose from two different modes:
+        - <a href="single_mode" target="self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
+        - <a href="multi_mode" target="self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
+        """,
+            unsafe_allow_html=True,
         )
 
     st.header("How it works", anchor=False, divider="gray")
@@ -36,18 +37,19 @@ def main():
         st.subheader("Single mode", anchor=False)
         st.markdown(
             """
-            1. **Choose a philosopher**: Select from renowned philosophers.
+            1. **Choose one philosopher**: Select from renowned philosophers.
             2. **Have them welcome you**: Read about their topics of interest.
-            3. **Chat with them**: Start a conversation with anything you want.
+            3. **Chat with them**: Have a discussion with them about anything you want.
             """
         )
     with _col2:
         st.subheader("Multi mode", anchor=False)
         st.markdown(
             """
-            1. **Choose several philosophers**: Select from renowned philosophers.
-            2. **Ask a question**: Ask about anything you want to learn about.
-            3. **Receive responses**: Enjoy thought-provoking answers from them.
+            1. **Choose several philosophers**: Select up to 5 philosophers at once.
+            2. **Ask a single question**: Ask anything you want to learn about.
+            3. **Receive responses**: Enjoy thought-provoking answers from all the philosophers.
+            4. **Assistant summary**: An assistant chatbot writes a comparative summary from the different answers.
             """
         )
 
@@ -55,10 +57,10 @@ def main():
     st.markdown(
         """
         The app _chat-o-sophy_ harnesses the power of Large Language Models (LLM) to allow you to chat with your favorite philosophers.
-        - Available open source models: [Llama-2 7B](https://ai.meta.com/llama/), [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/) (via [Replicate](https://replicate.com/))  
-        - Available closed source models: [GPT-3.5](https://platform.openai.com/docs/models/gpt-3-5) (via [OpenAI](https://platform.openai.com/))
+        - Available **open source** model(s): [Llama-2 7B](https://ai.meta.com/llama/), [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/) (via [Replicate](https://replicate.com/))  
+        - Available **closed source** model(s): [GPT-3.5](https://platform.openai.com/docs/models/gpt-3-5) (via [OpenAI](https://platform.openai.com/))
         
-        Main technical stack: [Python](https://www.python.org/), [LangChain](https://www.langchain.com/), [Streamlit](https://streamlit.io/)
+        Main technical stack: [Python](https://www.python.org/), [Streamlit](https://streamlit.io/), [LangChain](https://www.langchain.com/), [Lakera](https://www.lakera.ai/)
         """
     )
 
