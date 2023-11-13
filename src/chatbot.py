@@ -6,9 +6,12 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 from langchain.schema.messages import AIMessage, HumanMessage
 
 import utils.type_as as t
@@ -116,7 +119,8 @@ class PhilosopherChatbot(Chatbot):
 
     def greet(self, language: t.LanguageTypeAs) -> str:
         return self.chat(
-            prompt="I am your guest. Please present yourself, and greet me.",
+            prompt="I am your guest. Please present yourself, and greet me. "
+            "Please give me a brief description of your work, and your topics of interest, in the list format.",
             language=language,
         )
 
