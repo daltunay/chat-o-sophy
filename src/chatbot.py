@@ -22,8 +22,8 @@ class Chatbot:
         philosopher: t.PhilosopherTypeAs,
         model_provider: t.ProviderTypeAs,
         model_name: t.ModelNameTypeAs,
-        model_owner: t.ModelOwnerTypeAs,
-        model_version: t.ModelVersionTypeAs,
+        model_owner: t.ModelOwnerTypeAs = None,
+        model_version: t.ModelVersionTypeAs = None,
     ) -> None:
         self.bot_type = bot_type
         self.philosopher = philosopher
@@ -101,8 +101,8 @@ class PhilosopherChatbot(Chatbot):
         philosopher: t.PhilosopherTypeAs,
         model_provider: t.ProviderTypeAs,
         model_name: t.ModelNameTypeAs,
-        model_owner: t.ModelOwnerTypeAs,
-        model_version: t.ModelVersionTypeAs,
+        model_owner: t.ModelOwnerTypeAs = None,
+        model_version: t.ModelVersionTypeAs = None,
     ) -> None:
         super().__init__(
             bot_type="philosopher",
