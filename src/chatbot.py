@@ -1,5 +1,6 @@
 from functools import cached_property
 
+import yaml
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -13,6 +14,9 @@ from langchain.schema.messages import AIMessage, HumanMessage
 
 import utils.type_as as t
 from src.streaming import CustomStreamingCallbackHandlers
+
+with open("data/prompts.yaml") as f:
+    PROMPTS = yaml.safe_load(f)
 
 
 class Chatbot:
@@ -34,28 +38,14 @@ class Chatbot:
 
     @cached_property
     def template(self) -> ChatPromptTemplate:
-        if self.bot_type == "assistant":
-            system_message = (
-                "You are an assistant, of whom the purpose will be to summarize some philosophers' responses to a user question. "
-                "You will write a very brief short synthesis on the question topic, opposing philosophers' views. "
-                "The title will consist in the reformulated question. "
-            )
-        elif self.bot_type == "philosopher":
-            system_message = (
-                "From now on, you are not an AI anymore. You are in fact the famous philosopher called {philosopher}. "
-                "You will have a discussion with a user, which needs your philosopher's perspective. Your purpose is to enlighten them. "
-                "Please chat with the user, impersonating {philosopher}. Your only knowledge comes from {philosopher}'s knowledge. "
-                "If as the philosopher that you are, you do not have a viewpoint on the subject, please inform the user. "
-            )
-
         return ChatPromptTemplate.from_messages(
             [
-                SystemMessagePromptTemplate.from_template(template=system_message),
-                MessagesPlaceholder(variable_name="history"),
-                HumanMessagePromptTemplate.from_template(template="{input}"),
                 SystemMessagePromptTemplate.from_template(
-                    template="Your answer in {language}:"
+                    PROMPTS[self.bot_type]["system_message"]
                 ),
+                MessagesPlaceholder(variable_name="history"),
+                HumanMessagePromptTemplate.from_template("<{input}>"),
+                SystemMessagePromptTemplate.from_template("<Your answer in {language}:>"),
             ]
         )
 
@@ -116,8 +106,7 @@ class PhilosopherChatbot(Chatbot):
 
     def greet(self, language: t.LanguageTypeAs) -> str:
         return self.chat(
-            prompt="I am your guest. Please present yourself, and greet me. "
-            "Please give me a brief description of your work, and your topics of interest, in the list format.",
+            prompt=PROMPTS["philosopher"]["greetings"],
             language=language,
         )
 
@@ -168,17 +157,16 @@ class AssistantChatbot(Chatbot):
             history_str.append(response)
         return "\n\n".join(history_str)
 
-    def summarize_responses(self, language: t.LanguageTypeAs) -> str:
+    def summary_text(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
-            input=f"Summarize this conversation: {self.history_str}",
+            input=PROMPTS["assistant"]["summary_text"] + self.history_str,
             language=language,
             callbacks=self.callbacks,
         )
 
     def summary_table(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
-            input="Synthesize all of this in Markdown table format, with the main philosophers' views. "
-            "Just give the Markdown table output, nothing else. Keep it concise, as this will be displayed in a table. ",
+            input=PROMPTS["assistant"]["summary_table"],
             language=language,
             callbacks=self.callbacks,
         )

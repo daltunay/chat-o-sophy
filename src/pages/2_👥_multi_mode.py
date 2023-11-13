@@ -102,7 +102,7 @@ def main():
             model_version=model_version,
         )
         with st.spinner("Assistant is summarizing the reponses..."):
-            assistant.summarize_responses(language=selected_language)
+            assistant.summary_text(language=selected_language)
         with st.spinner("Assistant is generating a summary table..."):
             assistant.summary_table(language=selected_language)
 
