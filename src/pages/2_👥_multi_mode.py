@@ -2,8 +2,8 @@ import streamlit as st
 import yaml
 
 from src.chatbot import AssistantChatbot, PhilosopherChatbot
-from src.sidebar import Sidebar
 from src.llm_guard import lakera_guard
+from src.sidebar import Sidebar
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
