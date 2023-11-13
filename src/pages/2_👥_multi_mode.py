@@ -67,9 +67,7 @@ def main():
                 prompt=prompt, api_key=st.secrets.get("lakera_guard_api").key
             )
             if lakera_flagged:
-                st.error(
-                    "Lakera Guard detected a potentially harmful prompt", icon="🛡️
-                ")
+                st.error("Lakera Guard detected a potentially harmful prompt", icon="🛡️")
                 st.expander("Lakera Guard API — LOGS").write(lakera_response)
                 return
 
