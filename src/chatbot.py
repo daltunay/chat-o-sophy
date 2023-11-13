@@ -45,7 +45,9 @@ class Chatbot:
                 ),
                 MessagesPlaceholder(variable_name="history"),
                 HumanMessagePromptTemplate.from_template("<{input}>"),
-                SystemMessagePromptTemplate.from_template("<Your answer in {language}:>"),
+                SystemMessagePromptTemplate.from_template(
+                    "<Your answer in {language}:>"
+                ),
             ]
         )
 
