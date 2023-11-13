@@ -25,8 +25,8 @@ def main():
         _chat-o-sophy_ lets you engage in enlightening conversations with famous philosophers.
         
         Choose from two different modes:
-        - <a href="single_mode" target="self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
-        - <a href="multi_mode" target="self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
+        - <a href="single_mode" target="_self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
+        - <a href="multi_mode" target="_self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
         """,
             unsafe_allow_html=True,
         )
