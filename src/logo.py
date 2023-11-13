@@ -9,7 +9,7 @@ from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
 
-LOGOS_DIR = "static/logos/"
+LOGOS_DIR = "assets/logos/"
 
 
 def generate_new_logo():

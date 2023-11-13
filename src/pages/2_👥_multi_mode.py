@@ -83,7 +83,7 @@ def main():
                 model_owner=model_owner,
                 model_version=model_version,
             )
-            avatar = f"static/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+            avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
             with st.chat_message("ai", avatar=avatar):
                 with st.spinner(f"{chatbot.philosopher} is writing..."):
                     answer = chatbot.chat(prompt=prompt, language=selected_language)

@@ -69,7 +69,7 @@ def main():
         return
 
     if chatbot := st.session_state.get("chatbot"):
-        avatar = f"static/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
+        avatar = f"assets/avatars/{PHILOSOPHERS[chatbot.philosopher]['avatar']}"
         display_chat_history(chatbot, avatar)
 
         if chatbot.history == []:
