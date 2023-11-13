@@ -27,7 +27,7 @@ cd chat-o-sophy
 2. Set up the project dependencies using Poetry:
 
 ```bash
-poetry install --no-root
+poetry install
 ```
 
 This command will create a virtual environment and install the necessary dependencies.
