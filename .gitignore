@@ -6,3 +6,4 @@ __pycache__/
 *.pem
 *.pyc
 test.ipynb
+notes.txt
