@@ -15,7 +15,7 @@ with open("config/providers.yaml") as f:
     PROVIDERS = yaml.safe_load(f)
 
 
-class APIManager:
+class ModelAPIManager:
     def __init__(self, default_provider="openai", default_model="gpt-3.5-turbo"):
         self.model_provider = default_provider
         self.chosen_model = default_model
@@ -36,9 +36,9 @@ class APIManager:
         self.chosen_model = st.selectbox(
             label="Select the model:",
             options=MODELS.keys(),
-            key="api_manager.chosen_model",
+            key="model_api_manager.chosen_model",
             index=list(MODELS.keys()).index(
-                st.session_state.get("api_manager.chosen_model", self.chosen_model)
+                st.session_state.get("model_api_manager.chosen_model", self.chosen_model)
             ),
             help="Recommended: `gpt-3.5-turbo`",
             on_change=self.reset_state,
@@ -58,9 +58,9 @@ class APIManager:
     def default_api_key(self):
         self.api_keys[self.model_provider]["default"] = st.checkbox(
             label="Default API key",
-            key="api_manager.default",
+            key="model_api_manager.default",
             value=st.session_state.get(
-                "api_manager.default", self.api_keys[self.model_provider]["default"]
+                "model_api_manager.default", self.api_keys[self.model_provider]["default"]
             ),
             help="Use the provided default API key, if you don't have any",
             on_change=self.reset_state,
@@ -71,7 +71,7 @@ class APIManager:
         else:
             api_key = self.api_keys[self.model_provider]["api_key"]
 
-        self.authenticate(
+        self.authentificate(
             api_key=api_key,
             model_provider=self.model_provider,
             model_name=self.chosen_model,
@@ -104,7 +104,7 @@ class APIManager:
 
             st.form_submit_button(
                 label="Authentificate",
-                on_click=self.authenticate,
+                on_click=self.authentificate,
                 kwargs={
                     "api_key": api_key,
                     "model_provider": self.model_provider,
@@ -116,14 +116,14 @@ class APIManager:
                 use_container_width=True,
             )
 
-    def authenticate(self, api_key, model_provider, model_name, model_owner):
+    def authentificate(self, api_key, model_provider, model_name, model_owner):
         provider_label = PROVIDERS[self.model_provider]["label"]
         provider_env_var = PROVIDERS[model_provider]["env_var"]
 
         if model_provider == "openai":
-            success = self.authenticate_openai(api_key, model_name)
+            success = self.authentificate_openai(api_key, model_name)
         elif model_provider == "replicate":
-            success = self.authenticate_replicate(api_key, model_owner, model_name)
+            success = self.authentificate_replicate(api_key, model_owner, model_name)
 
         if not self.authentificated:
             if success:
@@ -137,7 +137,7 @@ class APIManager:
 
     @staticmethod
     @st.cache_data(show_spinner=False)
-    def authenticate_openai(api_key, model_name):
+    def authentificate_openai(api_key, model_name):
         response = requests.get(
             url=f"https://api.openai.com/v1/models/{model_name}",
             headers={"Authorization": f"Bearer {api_key}"},
@@ -146,7 +146,7 @@ class APIManager:
 
     @staticmethod
     @st.cache_data(show_spinner=False)
-    def authenticate_replicate(api_key, model_owner, model_name):
+    def authentificate_replicate(api_key, model_owner, model_name):
         response = requests.get(
             url=f"https://api.replicate.com/v1/models/{model_owner}/{model_name}",
             headers={"Authorization": f"Token {api_key}"},
@@ -157,7 +157,7 @@ class APIManager:
         provider_label = PROVIDERS[self.model_provider]["label"]
 
         if self.authentificated:
-            st.success(f"Successfully authenticated to {provider_label} API", icon="🔐")
+            st.success(f"Successfully authentificated to {provider_label} API", icon="🔐")
         else:
             st.info(f"Please configure the {provider_label} API above", icon="🔐")
 

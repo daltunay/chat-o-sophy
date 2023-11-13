@@ -3,6 +3,7 @@ import yaml
 
 from src.chatbot import AssistantChatbot, PhilosopherChatbot
 from src.sidebar import Sidebar
+from src.llm_guard import lakera_guard
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)
@@ -31,12 +32,13 @@ def main():
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
     sidebar.show()
 
-    authentificated = sidebar.api_manager.authentificated
-    model_provider = sidebar.api_manager.model_provider
-    chosen_model = sidebar.api_manager.chosen_model
-    model_owner = sidebar.api_manager.model_owner
-    model_version = sidebar.api_manager.model_version
+    authentificated = sidebar.model_api_manager.authentificated
+    model_provider = sidebar.model_api_manager.model_provider
+    chosen_model = sidebar.model_api_manager.chosen_model
+    model_owner = sidebar.model_api_manager.model_owner
+    model_version = sidebar.model_api_manager.model_version
     selected_language = sidebar.language_manager.selected_language
+    lakera_guard_active = sidebar.lakera_api_manager.activated
 
     current_choices = st.multiselect(
         label="Philosophers:",
@@ -59,6 +61,18 @@ def main():
         disabled=not (current_choices and authentificated),
     ):
         st.chat_message("human").markdown(prompt)
+
+        # LAKERA GUARD
+        if lakera_guard_active:
+            lakera_flagged, lakera_response = lakera_guard(
+                prompt=prompt, api_key=st.secrets.get("lakera_guard_api").key
+            )
+            if lakera_flagged:
+                st.error("Lakera Guard detected a potentially harmful prompt", icon="🛡️")
+                st.expander("Lakera Guard API — LOGS").write(lakera_response)
+                return
+
+        # CHATBOTS ANSWERS
         history = [{"role": "human", "content": prompt}]
         for philosopher in current_choices:
             st.header(f"{philosopher}'s answer", divider="gray", anchor=False)

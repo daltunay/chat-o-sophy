@@ -2,6 +2,7 @@ import streamlit as st
 import yaml
 
 from src.chatbot import PhilosopherChatbot
+from src.llm_guard import lakera_guard
 from src.sidebar import Sidebar
 from utils.logging import configure_logger
 
@@ -36,12 +37,13 @@ def main():
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
     sidebar.show()
 
-    authentificated = sidebar.api_manager.authentificated
-    model_provider = sidebar.api_manager.model_provider
-    chosen_model = sidebar.api_manager.chosen_model
-    model_owner = sidebar.api_manager.model_owner
-    model_version = sidebar.api_manager.model_version
+    authentificated = sidebar.model_api_manager.authentificated
+    model_provider = sidebar.model_api_manager.model_provider
+    chosen_model = sidebar.model_api_manager.chosen_model
+    model_owner = sidebar.model_api_manager.model_owner
+    model_version = sidebar.model_api_manager.model_version
     selected_language = sidebar.language_manager.selected_language
+    lakera_guard_active = sidebar.lakera_api_manager.activated
 
     current_choice = st.selectbox(
         label="Philosopher:",
@@ -80,6 +82,18 @@ def main():
             disabled=not (current_choice and authentificated),
         ):
             st.chat_message("human").markdown(prompt)
+
+            # LAKERA GUARD
+            if lakera_guard_active:
+                lakera_flagged, lakera_response = lakera_guard(
+                    prompt=prompt, api_key=st.secrets.get("lakera_guard_api").key
+                )
+                if lakera_flagged:
+                    st.error("Lakera Guard detected a potentially harmful prompt", icon="🛡️")
+                    st.expander("Lakera Guard API — LOGS").write(lakera_response)
+                    return
+
+            # CHATBOT ANSWER
             with st.chat_message("ai", avatar=avatar):
                 with st.spinner(f"{current_choice} is writing..."):
                     chatbot.chat(prompt, language=selected_language)
