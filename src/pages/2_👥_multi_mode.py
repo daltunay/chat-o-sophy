@@ -53,7 +53,7 @@ def main():
         st.error("Configure model in left sidebar to unlock selection", icon="🔒")
         return
     elif not current_choices:
-        st.info("Select several philosophers in the above menu", icon="ℹ️")
+        st.info("Select up to 5 philosophers in the above menu", icon="ℹ️")
 
     if prompt := st.chat_input(
         placeholder="What is your question?",
