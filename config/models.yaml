@@ -18,6 +18,6 @@ llama-2-7b-chat:
 
 dolly-v2-12b:
   model_provider: replicate
-  model_owner: meta
-  model_version: 13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0
+  model_owner: replicate
+  model_version: ef0e1aefc61f8e096ebe4db6b2bacc297daf2ef6899f0f7e001ec445893500e5
   experimental_flag: true
