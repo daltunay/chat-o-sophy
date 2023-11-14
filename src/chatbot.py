@@ -73,6 +73,7 @@ class Chatbot:
         elif self.model_provider == "replicate":
             return Replicate(
                 model=f"{self.model_owner}/{self.model_name}:{self.model_version}",
+                streaming=True,
                 model_kwargs={"max_length": 8192},
             )
 
