@@ -35,7 +35,7 @@ def main():
     st.caption("Chat with the philosopher of your choice!")
 
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
-    sidebar.show()
+    sidebar.main()
 
     authentificated = sidebar.model_api_manager.authentificated
     model_provider = sidebar.model_api_manager.model_provider

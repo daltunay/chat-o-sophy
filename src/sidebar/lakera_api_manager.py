@@ -49,11 +49,11 @@ class LakeraAPIManager:
     def api_key_form(self):
         with st.form("lakera_gard_api"):
             self.api_key["api_key"] = st.text_input(
-                label="Enter your Lakera guard API key:",
+                label="Enter your Lakera Guard API key:",
                 value=self.api_key["api_key"],
                 placeholder="[default]" if self.api_key["default"] else "",
                 type="password",
-                help="Click [here](https://platform.lakera.ai/account/api-keys) to get your Lakera guard API key",
+                help="Click [here](https://platform.lakera.ai/account/api-keys) to get your Lakera Guard API key",
                 autocomplete="",
                 disabled=self.api_key["default"],
             )
@@ -77,11 +77,11 @@ class LakeraAPIManager:
 
         if not self.authentificated:
             if success:
-                st.toast("API Authentication successful — Lakera guard", icon="✅")
+                st.toast("API Authentication successful — Lakera Guard", icon="✅")
                 os.environ["LAKERA_GUARD_API_KEY"] = api_key
                 self.authentificated = True
             else:
-                st.toast("API Authentication failed — Lakera guard", icon="🚫")
+                st.toast("API Authentication failed — Lakera Guard", icon="🚫")
                 os.environ.pop("LAKERA_GUARD_API_KEY", None)
                 self.authentificated = False
 
