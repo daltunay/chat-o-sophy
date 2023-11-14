@@ -37,8 +37,8 @@ def main():
         st.subheader("Single mode", anchor=False)
         st.markdown(
             """
-            1. **Choose one philosopher**: Select from renowned philosophers.
-            2. **Have them welcome you**: Read about their topics of interest.
+            1. **Choose one philosopher**: Select from a list of renowned philosophers who you want to chat with.
+            2. **Have them greet you**: Read about their topics of interest and main work.
             3. **Chat with them**: Have a discussion with them about anything you want.
             """
         )
@@ -48,7 +48,7 @@ def main():
             """
             1. **Choose several philosophers**: Select up to 5 philosophers at once.
             2. **Ask a single question**: Ask anything you want to learn about.
-            3. **Receive responses**: Enjoy thought-provoking answers from all the philosophers.
+            3. **Receive responses**: Enjoy the personal answer from each of the chosen philosophers.
             4. **Assistant summary**: An assistant chatbot writes a comparative summary from the different answers.
             """
         )
