@@ -11,7 +11,7 @@ st.set_page_config(page_title="chat-o-sophy", page_icon="💭", layout="wide")
 
 def main():
     sidebar = st.session_state.setdefault("sidebar", Sidebar())
-    sidebar.show()
+    sidebar.main()
 
     col1, col2 = st.columns(spec=[0.7, 0.3], gap="large")
     with col1:
@@ -25,8 +25,8 @@ def main():
         _chat-o-sophy_ lets you engage in enlightening conversations with famous philosophers.
         
         Choose from two different modes:
-        - <a href="single_mode" target="_self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
-        - <a href="multi_mode" target="_self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
+        - <a href="CHAT_–_single_mode" target="_self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
+        - <a href="CHAT_–_multi_mode" target="_self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
         """,
             unsafe_allow_html=True,
         )
