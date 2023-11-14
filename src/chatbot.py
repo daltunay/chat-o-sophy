@@ -13,7 +13,7 @@ from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
 from langchain.schema.messages import AIMessage, HumanMessage
 
 import utils.type_as as t
-from src.streaming import CustomCallbackManager
+from src.callbacks import CustomCallbackManager
 
 with open("data/prompts.yaml") as f:
     PROMPTS = yaml.safe_load(f)
