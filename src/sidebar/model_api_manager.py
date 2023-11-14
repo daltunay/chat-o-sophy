@@ -47,9 +47,9 @@ class ModelAPIManager:
         self.model_provider = MODELS[self.chosen_model]["model_provider"]
         self.model_owner = MODELS[self.chosen_model]["model_owner"]
         self.model_version = MODELS[self.chosen_model]["model_version"]
-        self.model_experimental = MODELS[self.chosen_model]["model_experimental"]
+        self.experimental_flag = MODELS[self.chosen_model]["experimental_flag"]
 
-        if self.model_experimental:
+        if self.experimental_flag:
             st.info(
                 f"Caution: `{self.chosen_model}` support is still experimental",
                 icon="⚠️",
