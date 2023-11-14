@@ -22,11 +22,13 @@ def main():
         st.header("Chat with your favorite philosophers!", divider="gray", anchor=False)
         st.markdown(
             """
-        _chat-o-sophy_ lets you engage in enlightening conversations with famous philosophers.
+        _chat-o-sophy_ lets you engage in enlightening conversations with famous philosophers, using the power of AI.
         
         Choose from two different modes:
         - <a href="CHAT_–_single_mode" target="_self"> single mode</a>: have a one-on-one conversation with a chosen philosopher and explore their unique perspectives.
         - <a href="CHAT_–_multi_mode" target="_self"> multi mode</a>: ask a question and get answers from multiple philosophers at once, gaining a well-rounded knowledge about the subject.
+        
+        Select a mode and get started now!
         """,
             unsafe_allow_html=True,
         )
