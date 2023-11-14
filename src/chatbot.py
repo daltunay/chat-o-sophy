@@ -1,7 +1,7 @@
 from functools import cached_property
 
 import yaml
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain.callbacks.manager import CallbackManager
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
@@ -13,7 +13,7 @@ from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
 from langchain.schema.messages import AIMessage, HumanMessage
 
 import utils.type_as as t
-from src.streaming import CustomStreamingCallbackHandlers
+from src.streaming import CustomCallbackManager
 
 with open("data/prompts.yaml") as f:
     PROMPTS = yaml.safe_load(f)
@@ -44,7 +44,7 @@ class Chatbot:
                     PROMPTS[self.bot_type]["system_message"]
                 ),
                 MessagesPlaceholder(variable_name="history"),
-                HumanMessagePromptTemplate.from_template("<{input}>"),
+                HumanMessagePromptTemplate.from_template("{input}"),
                 SystemMessagePromptTemplate.from_template(
                     "<Your answer in {language}:>"
                 ),
@@ -59,10 +59,9 @@ class Chatbot:
             return_messages=True,
         )
 
-    @cached_property
-    def callbacks(self) -> t.List[BaseCallbackHandler]:
-        callback_handlers = CustomStreamingCallbackHandlers()
-        return callback_handlers.callbacks
+    @property
+    def callback_manager(self) -> CallbackManager:
+        return CustomCallbackManager()
 
     @cached_property
     def llm(self) -> BaseChatModel:
@@ -117,7 +116,7 @@ class PhilosopherChatbot(Chatbot):
             input=prompt,
             philosopher=self.philosopher,
             language=language,
-            callbacks=self.callbacks,
+            callbacks=self.callback_manager.handlers,
         )
         self.update_history()
         return response

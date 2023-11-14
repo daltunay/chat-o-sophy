@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain.callbacks.base import BaseCallbackHandler
+from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.schema import LLMResult
 
@@ -21,11 +22,8 @@ class StreamingChatCallbackHandler(BaseCallbackHandler):
         self.container.markdown(response.generations[0][0].text, unsafe_allow_html=True)
 
 
-class CustomStreamingCallbackHandlers:
+class CustomCallbackManager(CallbackManager):
     def __init__(self):
-        self.chat_callback_handler = StreamingChatCallbackHandler()
-        self.stdout_callback_handler = StreamingStdOutCallbackHandler()
-
-    @property
-    def callbacks(self):
-        return [self.chat_callback_handler, self.stdout_callback_handler]
+        chat_handler = StreamingChatCallbackHandler()
+        stdout_handler = StreamingStdOutCallbackHandler()
+        super().__init__(handlers=[chat_handler, stdout_handler])
