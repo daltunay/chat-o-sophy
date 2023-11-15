@@ -10,6 +10,6 @@ RUN pip install "poetry==1.7.0" \
 
 EXPOSE 8501
 
-ENTRYPOINT ["streamlit", "run", "--server.address=0.0.0.0", "--server.port=8501"]
+ENTRYPOINT ["streamlit", "run"]
 
-CMD ["src/chat_o_sophy/Home.py"]
+CMD ["./src/chat_o_sophy/Home.py"]
