@@ -1,9 +1,9 @@
 import streamlit as st
 import yaml
 
-from src.chatbot import PhilosopherChatbot
-from src.llm_guard import lakera_guard
-from src.sidebar import Sidebar
+from chat_o_sophy.chatbot import PhilosopherChatbot
+from chat_o_sophy.llm_guard import lakera_guard
+from chat_o_sophy.sidebar import Sidebar
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)

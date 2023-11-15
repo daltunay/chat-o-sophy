@@ -1,7 +1,7 @@
 import streamlit as st
 
-from src.logo import new_logo
-from src.sidebar import Sidebar
+from chat_o_sophy.logo import new_logo
+from chat_o_sophy.sidebar import Sidebar
 from utils.logging import configure_logger
 
 logger = configure_logger(__file__)

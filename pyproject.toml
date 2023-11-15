@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Chat with your favorite philosohpers!"
 authors = ["Daniel Altunay"]
 readme = "README.md"
-packages = [{include="src"}]
+packages = [{ include = "chat_o_sophy", from = "src" }, { include = "utils" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
