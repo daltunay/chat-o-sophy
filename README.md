@@ -49,7 +49,7 @@ key="<LAKERA_GUARD_API_KEY>"
 ```
 
 The default OpenAI key is used for the logo generation, as well as the `gpt-3.5-turbo` model if the default checkbox is ticked.  
-The default Replicate key is used for the `llama-2-7b-chat`, `mistral-7b-instruct-v0.1` and `dolly-v2-12b` models if the default checkbox is ticked.
+The default Replicate key is used for the `llama-2-7b-chat`, `mistral-7b-instruct-v0.1`, `dolly-v2-12b` and `zephyr-7b-alpha` models if the default checkbox is ticked.
 
 ## Running the Application
 The _chat-o-sophy_ application can be run using either Poetry or Docker.

@@ -163,12 +163,12 @@ class AssistantChatbot(Chatbot):
         return self.chain.run(
             input=PROMPTS["assistant"]["summary_text"] + self.history_str,
             language=language,
-            callbacks=self.callbacks,
+            callbacks=self.callback_manager.handlers,
         )
 
     def summary_table(self, language: t.LanguageTypeAs) -> str:
         return self.chain.run(
             input=PROMPTS["assistant"]["summary_table"],
             language=language,
-            callbacks=self.callbacks,
+            callbacks=self.callback_manager.handlers,
         )
