@@ -59,7 +59,7 @@ def main():
     st.markdown(
         """
         The app _chat-o-sophy_ harnesses the power of Large Language Models (LLM) to allow you to chat with your favorite philosophers.
-        - Available **open source** model(s): [Llama-2 7B](https://ai.meta.com/llama/), [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/), [Dolly-v2 12B](https://www.databricks.com/blog/2023/04/12/dolly-first-open-commercially-viable-instruction-tuned-llm) (via [Replicate](https://replicate.com/))  
+        - Available **open source** model(s): [Llama-2 7B](https://ai.meta.com/llama/), [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/), [Dolly-v2 12B](https://www.databricks.com/blog/2023/04/12/dolly-first-open-commercially-viable-instruction-tuned-llm), [Vicuna 13B](https://lmsys.org/blog/2023-03-30-vicuna/) (via [Replicate](https://replicate.com/))  
         - Available **closed source** model(s): [GPT-3.5](https://platform.openai.com/docs/models/gpt-3-5) (via [OpenAI](https://platform.openai.com/))
         
         Main technical stack: [Python](https://www.python.org/), [Streamlit](https://streamlit.io/), [LangChain](https://www.langchain.com/), [Lakera](https://www.lakera.ai/)

@@ -4,7 +4,7 @@ BotTypeAs = Literal["philosopher", "assistant"]
 PhilosopherTypeAs = Optional[str]
 ProviderTypeAs = Literal["openai", "replicate"]
 ModelNameTypeAs = Literal[
-    "gpt-3.5-turbo", "mistral-7b-instruct-v0.1", "llama-2-7b-chat", "dolly-v2-12b"
+    "gpt-3.5-turbo", "mistral-7b-instruct-v0.1", "llama-2-7b-chat", "dolly-v2-12b", "vicuna-13b"
 ]
 LanguageTypeAs = Literal["English", "French", "German", "Spanish"]
 ModelOwnerTypeAs = Optional[Literal["mistralai", "meta"]]

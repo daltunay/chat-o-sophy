@@ -21,3 +21,9 @@ dolly-v2-12b:
   model_owner: replicate
   model_version: ef0e1aefc61f8e096ebe4db6b2bacc297daf2ef6899f0f7e001ec445893500e5
   experimental_flag: true
+
+vicuna-13b:
+  model_provider: replicate
+  model_owner: replicate
+  model_version: 6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b
+  experimental_flag: true
