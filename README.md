@@ -45,7 +45,7 @@ key="<OPENAI_API_KEY>"
 key="<REPLICATE_API_TOKEN>"
 
 [lakera_guard_api]
-key="<LAKERA_GUARD_API_KEY">
+key="<LAKERA_GUARD_API_KEY>"
 ```
 
 The default OpenAI key is used for the logo generation, as well as the `gpt-3.5-turbo` model if the default checkbox is ticked.  
