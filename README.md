@@ -59,7 +59,7 @@ The _chat-o-sophy_ application can be run using either Poetry or Docker.
 To run the application using Poetry:
 
 ```bash
-poetry run streamlit run ./src/Home.py
+poetry run streamlit run ./src/chat_o_sophy/Home.py
 ```
 
 ### Using Docker

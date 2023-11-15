@@ -10,4 +10,4 @@ RUN pip install "poetry==1.7.0" \
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "./src/Home.py"]
+CMD ["streamlit", "run", "./src/chat_o_sophy/Home.py"]
