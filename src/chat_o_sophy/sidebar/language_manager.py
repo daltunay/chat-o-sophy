@@ -36,5 +36,4 @@ class LanguageManager:
         )
 
     def main(self):
-        st.header("Language", divider="gray")
         self.choose_language()

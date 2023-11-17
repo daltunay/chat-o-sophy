@@ -13,6 +13,7 @@ class Sidebar:
 
     def main(self):
         with st.sidebar:
+            st.header("Language", divider="gray")
             self.language_manager.main()
             st.header("Advanced settings", divider="gray")
             with st.expander("Model", expanded=False):

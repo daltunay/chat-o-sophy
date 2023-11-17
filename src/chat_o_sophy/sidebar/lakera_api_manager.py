@@ -103,7 +103,6 @@ class LakeraAPIManager:
                 st.info("Please configure the Lakera Guard API above", icon="🔐")
 
     def main(self):
-        st.header("Lakera Guard", divider="gray")
         self.activate()
         self.default_api_key()
         self.api_key_form()
